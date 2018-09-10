@@ -1,2 +1,3 @@
 class Region < ApplicationRecord
+    
 end
