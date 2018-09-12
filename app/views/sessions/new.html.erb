@@ -1,11 +1,4 @@
-
-  <h1>Log in</h1>
-
-
-
-
-
-    <%= form_for(:session, url: login_path) do |f| %>
+    <%= form_for(:session, url: admin_path) do |f| %>
 
 
         <%= f.label :email, 'Email' %>
@@ -17,7 +10,9 @@
         <%= f.password_field :password, class: 'form-control' %>
         <br>
 
-        <%= f.submit 'Log in', class: 'btn btn-primary btn-block' %>
+        <%= f.submit 'Log in', class: 'btn btn-primary btn-block' %><br>
+        
+        <%= link_to 'Logout', logout_path, method: :delete %>
     <% end %>
 
 

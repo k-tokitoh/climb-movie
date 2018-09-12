@@ -3,8 +3,8 @@ Rails.application.routes.draw do
 
   get '/', to: 'posts#index'
 
-  get 'login', to: 'sessions#new'
-  post 'login', to: 'sessions#create'
+  get 'admin', to: 'sessions#new'
+  post 'admin', to: 'sessions#create'
   delete 'logout', to: 'sessions#destroy'
 
   get '/area/:id', to: 'areas#show'
