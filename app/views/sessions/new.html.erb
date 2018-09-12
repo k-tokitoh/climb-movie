@@ -2,15 +2,15 @@
 
 
         <%= f.label :email, 'Email' %>
-        <%= f.email_field :email, class: 'form-control' %>
+        <%= f.email_field :email %>
         <br>
 
 
         <%= f.label :password, 'Password' %>
-        <%= f.password_field :password, class: 'form-control' %>
+        <%= f.password_field :password %>
         <br>
 
-        <%= f.submit 'Log in', class: 'btn btn-primary btn-block' %><br>
+        <%= f.submit 'Log in' %><br>
         
         <%= link_to 'Logout', logout_path, method: :delete %>
     <% end %>

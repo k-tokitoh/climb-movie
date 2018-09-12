@@ -6,7 +6,7 @@ class SessionsController < ApplicationController
     email = params[:session][:email].downcase
     password = params[:session][:password]
     if login(email, password)
-      flash[:success] = 'ログインに成功しました。'
+      flash[:success] = 'ログインに成功しました。'    #views/layouts/application.html.erbで表示
       redirect_to '/'
     else
       flash.now[:danger] = 'ログインに失敗しました。'
@@ -23,6 +23,7 @@ class SessionsController < ApplicationController
   
   private
 
+  # def createで利用する
   def login(email, password)
     @user = User.find_by(email: email)
     if @user && @user.authenticate(password)
