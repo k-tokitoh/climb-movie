@@ -1,1 +1,5 @@
-Welcome to climbmania!
+<p>Welcome to climbmania!</p>
+
+<% if session[:admin] == true %>
+  <%= "管理者としてログインしています" %>
+<% end %>
