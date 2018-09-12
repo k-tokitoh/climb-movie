@@ -28,6 +28,13 @@ ActiveRecord::Schema.define(version: 20180911135707) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "posts_problems", id: false, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.integer "post_id"
+    t.integer "problem_id"
+    t.index ["post_id"], name: "index_posts_problems_on_post_id", using: :btree
+    t.index ["problem_id"], name: "index_posts_problems_on_problem_id", using: :btree
+  end
+
   create_table "problems", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string   "name"
     t.string   "grade"
@@ -35,13 +42,6 @@ ActiveRecord::Schema.define(version: 20180911135707) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["rock_id"], name: "index_problems_on_rock_id", using: :btree
-  end
-
-  create_table "problems_posts", id: false, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-    t.integer "problem_id"
-    t.integer "post_id"
-    t.index ["post_id"], name: "index_problems_posts_on_post_id", using: :btree
-    t.index ["problem_id"], name: "index_problems_posts_on_problem_id", using: :btree
   end
 
   create_table "regions", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
@@ -68,8 +68,8 @@ ActiveRecord::Schema.define(version: 20180911135707) do
   end
 
   add_foreign_key "areas", "regions"
+  add_foreign_key "posts_problems", "posts"
+  add_foreign_key "posts_problems", "problems"
   add_foreign_key "problems", "rocks"
-  add_foreign_key "problems_posts", "posts"
-  add_foreign_key "problems_posts", "problems"
   add_foreign_key "rocks", "areas"
 end
