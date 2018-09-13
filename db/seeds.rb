@@ -63,13 +63,5 @@ Problem.find_by(name: '穴社長').posts.create(video: 'ENT6A0BYtTo')
 
 
 
-# pp = Problem.find_by(name: '忍者返し').problems_posts.build
-# pp.post.video = 'QhMLI12ceqg'
-# pp.save
-
-# Post.create(video: '', problem_id: Problem.find_by(name: 'エイハブ船長').id )
-# Post.create(video: '', problem_id: Problem.find_by(name: 'エイハブ船長').id )
-# Post.create(video: '', problem_id: Problem.find_by(name: '穴社長').id )
-# Post.create(video: '', problem_id: Problem.find_by(name: '穴社長').id )
 
 

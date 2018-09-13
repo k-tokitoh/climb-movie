@@ -3,3 +3,15 @@
 <% if session[:admin] == true %>
   <%= "管理者としてログインしています" %>
 <% end %>
+
+<ul>
+  <% @posts.each do |post| %>
+    <li><%= "地域：#{post.problems.first.rock.area.region.name}" %></li>
+    <li><%= "岩場：#{post.problems.first.rock.area.name}" %></li>
+    <% post.problems.each do |problem| %>
+        <li><%= "課題名：#{problem.name}(#{problem.rock.name})" %></li>
+    <% end %>
+    <li><%= post.video %></li>
+    --------------------------
+  <% end %>
+</ul>
