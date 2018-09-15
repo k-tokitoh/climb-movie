@@ -1,5 +1,7 @@
 <p>Welcome to climbmania!</p>
 
+ブランチテスト
+
 <% if session[:admin] == true %>
   <%= "管理者としてログインしています　" %><%= link_to 'Logout', logout_path, method: :delete %><br>
   <%= link_to 'Youtube動画を取得する', youtubeAPI_path, method: :get %>
