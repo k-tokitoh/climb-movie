@@ -35,6 +35,12 @@ class PostsController < ApplicationController
         redirect_to '/'
     end
     
+    def search
+        @posts = Post.where(id: params[:q])
+        #byebug
+        render 'index'
+    end
+    
     private
 
     def post_params

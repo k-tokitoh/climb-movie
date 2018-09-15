@@ -1,11 +1,16 @@
-git merge remotes/origin/test_j<p>Welcome to climbmania!</p>
+<p>Welcome to climbmania!</p>
 
 <% if session[:admin] == true %>
   <%= "管理者としてログインしています" %>
   <%= link_to 'Logout', logout_path, method: :delete %><br>
   <%= link_to 'Youtube動画を取得する', youtubeAPI_path, method: :get %>
 <% end %>
-
+<p>検索</p>
+<%= form_tag("/search", method: "get") do %>
+  <%= label_tag(:q, "フリーワード") %>
+  <%= text_field_tag(:q) %>
+  <%= submit_tag("Search") %>
+<% end %>
 <ul>
   <% @posts.each do |post| %>
     <li><%= "地域：#{post.problems.first.rock.area.region.name}" %></li>
