@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180911135707) do
+ActiveRecord::Schema.define(version: 20180915090621) do
 
   create_table "areas", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string   "name"
@@ -23,7 +23,7 @@ ActiveRecord::Schema.define(version: 20180911135707) do
   create_table "posts", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string   "video"
     t.integer  "hit"
-    t.boolean  "approved"
+    t.string   "approved"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

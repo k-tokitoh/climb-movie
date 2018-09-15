@@ -4,6 +4,13 @@ class PostsController < ApplicationController
         @posts = Post.all
     end
     
+    def update
+        @post = Post.find(params[:id])
+        @post.update_attributes(post_params)    #post_paramsはprivateで定義している
+
+        redirect_to '/'
+    end
+
     def get_youtube_videos
         #以下の３行、ここに書くのでよいのかな？
         require 'google/apis/youtube_v3'
@@ -28,5 +35,10 @@ class PostsController < ApplicationController
         redirect_to '/'
     end
     
+    private
+
+    def post_params
+      params.require(:post).permit(:approved)
+    end
     
 end
