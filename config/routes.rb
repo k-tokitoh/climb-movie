@@ -3,6 +3,8 @@ Rails.application.routes.draw do
 
   get '/', to: 'posts#index'
 
+  resources :posts
+
   get 'admin', to: 'sessions#new'
   post 'admin', to: 'sessions#create'
   delete 'logout', to: 'sessions#destroy'
