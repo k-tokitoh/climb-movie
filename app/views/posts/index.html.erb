@@ -1,7 +1,7 @@
-<p>Welcome to climbmania!</p>
+git merge remotes/origin/test_j<p>Welcome to climbmania!</p>
 
 <% if session[:admin] == true %>
-  <%= "管理者としてログインしていますj　" %><%= link_to 'Logout', logout_path, method: :delete %><br>
+  <%= "管理者としてログインしています(鈴木による追記)　" %><%= link_to 'Logout', logout_path, method: :delete %><br>
   <%= link_to 'Youtube動画を取得する', youtubeAPI_path, method: :get %>
 <% end %>
 
