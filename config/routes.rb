@@ -7,6 +7,8 @@ Rails.application.routes.draw do
   post 'admin', to: 'sessions#create'
   delete 'logout', to: 'sessions#destroy'
 
+  get 'youtubeAPI', to: 'posts#get_youtube_videos'
+  
   get '/area/:id', to: 'areas#show'
 
 

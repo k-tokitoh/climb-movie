@@ -1,7 +1,8 @@
 <p>Welcome to climbmania!</p>
 
 <% if session[:admin] == true %>
-  <%= "管理者としてログインしています" %>
+  <%= "管理者としてログインしています　" %><%= link_to 'Logout', logout_path, method: :delete %><br>
+  <%= link_to 'Youtube動画を取得する', youtubeAPI_path, method: :get %>
 <% end %>
 
 <ul>
