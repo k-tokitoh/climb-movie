@@ -1,7 +1,8 @@
 <p>Welcome to climbmania!</p>
 
 <% if session[:admin] == true %>
-  <%= "管理者としてログインしています(鈴木による追記)　" %><%= link_to 'Logout', logout_path, method: :delete %><br>
+  <%= "管理者としてログインしています" %>
+  <%= link_to 'Logout', logout_path, method: :delete %><br>
   <%= link_to 'Youtube動画を取得する', youtubeAPI_path, method: :get %>
 <% end %>
 
@@ -9,10 +10,21 @@
   <% @posts.each do |post| %>
     <li><%= "地域：#{post.problems.first.rock.area.region.name}" %></li>
     <li><%= "岩場：#{post.problems.first.rock.area.name}" %></li>
+
     <% post.problems.each do |problem| %>
-        <li><%= "課題名：#{problem.name}(#{problem.rock.name})" %></li>
+      <li><%= "課題名：#{problem.name}(#{problem.rock.name})" %></li>
     <% end %>
+
     <li><%= post.video %></li>
+
+　　<% if session[:admin] == true %>
+      <%= form_for(post) do |f| %>
+        <label><%= f.radio_button :approved, 'OK' %>OK</label><%= '    ' %> &nbsp&nbsp
+        <label><%= f.radio_button :approved, 'NG' %>NG</label><%= '    ' %> &nbsp&nbsp
+        <!--&nbspは空白を表すHTMLの特殊文字-->
+        <%= f.submit '更新' %>
+      <% end %>
+    <% end %>
     --------------------------
   <% end %>
 </ul>
