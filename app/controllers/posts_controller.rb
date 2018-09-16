@@ -36,19 +36,23 @@ class PostsController < ApplicationController
     end
     
     def search
-        matched_ids = Post.pluck(:id).select{ |i|       # ポストの各idに対し、(pluck(:id)idを要素とする配列を返す)
-            words = get_words(post_id: i)               # まずそれにひもづく単語リストwordsを取得
-
-            params[:q].split().map{ |qword|             # クエリをsplitして得られた各単語qwordに対して
+        selection_string =                          # joinした後のActiveRecord_Relationでselectするときは、
+            'regions.name as region, '+             # カラム名(nameとか)が重複するときは、asで名付け直さないといけないらしい
+            'areas.name as area, ' +                # 今回は全て名付け直しておいた。
+            'rocks.name as rock, ' +                # 
+            'problems.name as problem, ' +          # 
+            'problems.grade as grade, ' +
+            'posts.id as post_id'
+            
+        matched_ids = Region.joins({areas: {rocks: {problems: :posts}}})
+                            .select(selection_string).select{ |rec|             # joinして得たレコードrecに対し
+            words = [rec.region, rec.area, rec.rock, rec.problem, rec.grade]
+            params[:q].split().all?{ |qword|            # クエリをsplitして得られた各単語qwordに対して
                 words.any?{ |word|                      # そのqwordが単語リストwordsに
                     word.include?(qword)                # 部分文字列として登場するか
                 }                                       # 1回でも登場したらtrueを返す
-            }.all?                                      # 全てのqwordが条件を満たすidを取ってくる
-            
-        }
-        logger.debug('prams')
-        logger.debug(params[:q])
-        logger.debug(matched_ids)
+            }
+        }.map{ |rec| rec.post_id}
         @posts = Post.where(id: matched_ids).page(params[:page]).per(10)              # 選択されたidのみ表示する
         render 'index'
     end
