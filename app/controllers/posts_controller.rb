@@ -24,11 +24,11 @@ class PostsController < ApplicationController
                 "id",                   #取得内容
                 type: "video",          #チャンネルやプレイリストを含まず、動画のみ取得する
                 q: problem.name,        #検索キーワードの指定（検索方法は他にも色々あり）
-                max_results: 10         #最大取得件数
+                max_results: 50        #最大取得件数
             ).items                     #動画リソースのみにフィルター
             
             results.each do |result|
-                Problem.find_by(name: problem.name).posts.create(video: result.id.video_id)
+                Problem.find_by(name: problem.name).posts.create(video: result.id.video_id, approved: 'undecided')
             end
         end
         
@@ -46,7 +46,6 @@ class PostsController < ApplicationController
             }.all?                                      # 全てのqwordが条件を満たすidを取ってくる
             
         }
-        byebug
         logger.debug('prams')
         logger.debug(params[:q])
         logger.debug(matched_ids)
