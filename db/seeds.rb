@@ -9,22 +9,24 @@ require 'csv'
 
 User.create(name: 'admin', email:'admin@climbmania.jp', password: 'yamashitayuji', admin: true)
 
-CSV.foreach('db/climbmania_db.csv', headers: true, encoding: "Shift_JIS:UTF-8") do |record|
-    Region.create(name: record['region'])  
-    
+CSV.foreach('db/climbmania_db.csv', headers: true, encoding: "Shift_JIS:UTF-8") do |record|     #CSVを１行ずつ読みこむ
+
+    #regionレコードを作成（nilだとvalidationで弾かれ、レコードは作成されない。以下同様。）
+    Region.create(name: record['region'])               
+
     region = Region.find_by(name: record['region'])
-    if region.present?
-        region.areas.create(name: record['area'])
+    if region.present? 
+        region.areas.create(name: record['area'])       #regionレコードを作成
     end
-    
+
     area = Area.find_by(name: record['area'])
     if area.present?
-        area.rocks.create(name: record['rock'])
+        area.rocks.create(name: record['rock'])         #areaレコードを作成
     end
-    
+
     rock = Rock.find_by(name: record['rock'])
     if rock.present?
-        rock.problems.create(name: record['problem'], grade: record['grade'])
+        rock.problems.create(name: record['problem'], grade: record['grade'])       #problemレコードを作成
     end
 end
 

@@ -24,7 +24,7 @@ class PostsController < ApplicationController
                 "id",                   #取得内容
                 type: "video",          #チャンネルやプレイリストを含まず、動画のみ取得する
                 q: problem.name,        #検索キーワードの指定（検索方法は他にも色々あり）
-                max_results: 10         #最大取得件数
+                max_results: 50        #最大取得件数
             ).items                     #動画リソースのみにフィルター
             
             results.each do |result|
