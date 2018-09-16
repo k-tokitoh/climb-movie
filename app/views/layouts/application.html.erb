@@ -8,8 +8,12 @@
     <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
   </head>
 
+  <header>
+    <%= image_tag 'title.png' %>
+  </header>
+
   <body>
-    <%= "デバッグ用表示 params:#{params}"  %><br>
+    <!--<%= "デバッグ用表示 params:#{params}"  %>-->
     <% flash.each do |message_type, message| %>
       <%= message %><br>
     <% end %>

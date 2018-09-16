@@ -36,7 +36,7 @@ class PostsController < ApplicationController
     end
     
     def search
-        matched_ids = Post.pluck(:id).select{ |i|       # ポストの各idに対し、
+        matched_ids = Post.pluck(:id).select{ |i|       # ポストの各idに対し、(pluck(:id)idを要素とする配列を返す)
             words = get_words(post_id: i)               # まずそれにひもづく単語リストwordsを取得
 
             params[:q].split().map{ |qword|             # クエリをsplitして得られた各単語qwordに対して
@@ -46,7 +46,7 @@ class PostsController < ApplicationController
             }.all?                                      # 全てのqwordが条件を満たすidを取ってくる
             
         }
-        #byebug
+        byebug
         logger.debug('prams')
         logger.debug(params[:q])
         logger.debug(matched_ids)
@@ -62,7 +62,7 @@ class PostsController < ApplicationController
     
     def get_words(post_id:)
         ps = Problem.includes(:posts).where('posts.id'=>post_id)    # idがpost_idのpostに紐づく課題たち
-        psnames = ps.pluck(:name, :grade).flatten.uniq              # 課題名と級を格納した配列
+        psnames = ps.pluck(:name, :grade).flatten.uniq              # 課題名と級を格納した配列,flattenで二次元配列を一次元配列にする
         rocknames = ps.pluck(:rock_id).uniq.map{ |rock_id|          # 各課題の岩idに対し(重複をのぞいてから)
             rock = Rock.find(rock_id)                               # 岩を取得
             area = Area.find(rock.area_id)                          # エリア取得

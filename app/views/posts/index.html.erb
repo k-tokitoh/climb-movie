@@ -1,36 +1,48 @@
-<p>Welcome to climbmania!</p>
-
 <% if session[:admin] == true %>
   <%= "管理者としてログインしています" %>
   <%= link_to 'Logout', logout_path, method: :delete %><br>
   <%= link_to 'Youtube動画を取得する', youtubeAPI_path, method: :get %>
 <% end %>
-<p>検索</p>
+
 <%= form_tag("/search", method: "get") do %>
   <%= label_tag(:q, "フリーワード") %>
   <%= text_field_tag(:q) %>
   <%= submit_tag("Search") %>
 <% end %>
+
+
 <ul>
   <% @posts.each do |post| %>
-    <li><%= "地域：#{post.problems.first.rock.area.region.name}" %></li>
-    <li><%= "岩場：#{post.problems.first.rock.area.name}" %></li>
-
-    <% post.problems.each do |problem| %>
-      <li><%= "課題名：#{problem.name}(#{problem.rock.name})" %></li>
-    <% end %>
-
-    <li><%= post.video %></li>
-
-　　<% if session[:admin] == true %>
-      <%= form_for(post) do |f| %>
-        <label><%= f.radio_button :approved, 'OK' %>OK</label><%= '    ' %> &nbsp&nbsp
-        <label><%= f.radio_button :approved, 'NG' %>NG</label><%= '    ' %> &nbsp&nbsp
-        <!--&nbspは空白を表すHTMLの特殊文字-->
-        <%= f.submit '更新' %>
+    <div class='posts'>
+      <% post.problems.each do |problem| %>
+        <%= "#{problem.name}#{problem.grade}(#{problem.rock.name})" %>
       <% end %>
-    <% end %>
-    --------------------------
+
+      <%= "#{post.problems.first.rock.area.name}(#{post.problems.first.rock.area.region.name})" %><br>
+
+      <div class="video">
+        <iframe
+          src="https://www.youtube.com/embed/<%= post.video.html_safe %>?rel=0&amp;showinfo=0"
+          frameborder="0"                       #外枠非表示
+          allow="autoplay; encrypted-media"
+          allowfullscreen
+        >
+        </iframe>
+      </div>
+
+  　　<% if session[:admin] == true %>
+        <%= form_for(post) do |f| %>
+          <label><%= f.radio_button :approved, 'OK' %>OK</label><%= '    ' %> &nbsp&nbsp
+          <label><%= f.radio_button :approved, 'NG' %>NG</label><%= '    ' %> &nbsp&nbsp
+          <!--&nbspは空白を表すHTMLの特殊文字-->
+          <%= f.submit '更新' %>
+        <% end %>
+      <% end %>
+    </div>
+    <hr>
   <% end %>
 </ul>
-<%= paginate @posts %>
+
+<div class="paginator">
+  <%= paginate @posts %>
+</div>
