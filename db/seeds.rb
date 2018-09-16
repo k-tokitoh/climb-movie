@@ -5,8 +5,30 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+require 'csv'
 
 User.create(name: 'admin', email:'admin@climbmania.jp', password: 'yamashitayuji', admin: true)
+
+CSV.foreach('db/climbmania_db.csv', headers: true, encoding: "Shift_JIS:UTF-8") do |record|
+    Region.create(name: record['region'])  
+    if Region.find_by(name: record['region']).present?
+        Region.find_by(name: record['region']).areas.create(name: record['area'])
+    end
+    if Area.find_by(name: record['area']).present?
+        Area.find_by(name: record['area']).rocks.create(name: record['rock'])
+    end
+    if Rock.find_by(name: record['rock']).present?
+        Rock.find_by(name: record['rock']).problems.create(name: record['problem'], grade: record['grade'])
+    end
+end
+
+# workbook = Spreadsheet.open("db/climbmania_db.xls") 
+# worksheet = workbook.worksheet('sheet1')
+
+# wb = RubyXL::Parser.parse "db/climbmania_db.xls"
+# ws = workbook[0].extract_data({})
+# seeds = worksheet.get_table(headers)[:table]
+
 
 Region.create(name: '北海道')
 Region.create(name: '東北')

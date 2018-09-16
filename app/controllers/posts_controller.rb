@@ -28,7 +28,7 @@ class PostsController < ApplicationController
             ).items                     #動画リソースのみにフィルター
             
             results.each do |result|
-                Problem.find_by(name: problem.name).posts.create(video: result.id.video_id)
+                Problem.find_by(name: problem.name).posts.create(video: result.id.video_id, approved: 'undecided')
             end
         end
         
@@ -46,7 +46,6 @@ class PostsController < ApplicationController
             }.all?                                      # 全てのqwordが条件を満たすidを取ってくる
             
         }
-        byebug
         logger.debug('prams')
         logger.debug(params[:q])
         logger.debug(matched_ids)
