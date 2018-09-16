@@ -33,8 +33,6 @@ gem 'jbuilder', '~> 2.5'
 gem 'bcrypt', '~> 3.1.7'
 gem 'google-api-client', '~> 0.11'
 gem 'kaminari'
-gem 'rubyXL'
-gem 'spreadsheet'
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
