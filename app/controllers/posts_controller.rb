@@ -3,7 +3,6 @@ class PostsController < ApplicationController
     def index
         if session[:admin]                                                      #管理ユーザの場合、
             @posts = Post.all.page(params[:page]).per(10)                       #全てのポストをフィードして、
-            @approval ={ undecided: true, OK: true, NG: true }                  #承認状況チェックボックスの初期値を設定する
         else                                                                    #一般ユーザの場合、
             @posts = Post.where(approved: 'OK').page(params[:page]).per(10)     #公開が許可されたポストのみをフィードする
         end
@@ -12,8 +11,7 @@ class PostsController < ApplicationController
     def update                                  #承認状況等の更新
         @post = Post.find(params[:id])
         @post.update_attributes(post_params)    #post_paramsはprivateで定義している
-
-        redirect_to '/'
+        render plain: @post.approved            # @postの承認状況(を表すテキスト)を送る
     end
 
     def get_youtube_videos
@@ -41,17 +39,7 @@ class PostsController < ApplicationController
     end
     
     def search
-        selection_string =                          # joinした後のActiveRecord_Relationでselectするときは、
-            'regions.name as region, '+             # カラム名(nameとか)が重複するときは、asで名付け直さないといけないらしい
-            'areas.name as area, ' +                # 今回は全て名付け直しておいた。
-            'rocks.name as rock, ' +
-            'problems.name as problem, ' +
-            'problems.grade as grade, ' +
-            'posts.id as post_id, ' +
-            'posts.approved as approved'
-        q = params[:q].gsub(/\p{blank}/,' ')        #検索クエリの全角スペースを半角スペースに置換する
-
-        if params.has_key?(:approval)
+        if params.has_key?(:approval)           # 検索条件の認証状態チェックボックスに一つでもチェックがある場合
             approval_condition = params[:approval].keys.map{|key|key.to_s}
         else
             approval_condition = []
@@ -60,10 +48,22 @@ class PostsController < ApplicationController
         #ex. approval_condition = ["OK", "NG"]
 
         #検索対象となる情報をすべて含むactiverecord associationを取得する
-        db = Region.joins({areas: {rocks: {problems: :posts}}}).select(selection_string)
+        selection_string =                          # joinした後のActiveRecord_Relationでselectするときは、
+            'regions.name as region, '+             # カラム名(nameとか)が重複するときは、asで名付け直さないといけないらしい
+            'areas.name as area, ' +                # 今回は全て名付け直しておいた。
+            'rocks.name as rock, ' +
+            'problems.name as problem, ' +
+            'problems.grade as grade, ' +
+            'posts.id as post_id'
+        db = Region.joins(areas: {rocks: {problems: :posts}})       # 順次joinする
+                    .where(posts: {approved: approval_condition})   # approval_conditonにマッチするpostのみ取り出す
+                    .select(selection_string)                       # 検索に用いるカラムを取り出す
+                    
+        q = params[:q].gsub(/\p{blank}/,' ').split()    #検索クエリの全角スペースを半角スペースに置換してsplit
+
         matched_ids =
             #各レコードについて、複数の検索条件全てに合致するかをしらべて
-            db.select{ |record| approval_filter(record, approval_condition) && freeword_search(record, q)
+            db.select{ |record| freeword_search(record, q)          # qは検索クエリワードの配列
             #すべての検索条件に合致する場合のみpost_idを記録する
             }.map{ |record| record.post_id}
 
@@ -78,19 +78,15 @@ class PostsController < ApplicationController
       params.require(:post).permit(:approved)
     end
 
-    def freeword_search(record,q)
+    def freeword_search(record, query_words)
         words = [record.region, record.area, record.rock, record.problem, record.grade]
         match_or_not =
-            q.split().all?{ |qword|             # クエリをsplitして得られた各単語qwordに対して
+            query_words.all?{ |qword|             # クエリをsplitして得られた各単語qwordに対して
                 words.any?{ |word|              # そのqwordが単語リストwordsに
                     word.include?(qword)        # 部分文字列として登場するか
                 }                               # 1回でも登場したらtrueを返す
             }                                           
         return match_or_not
-    end
-
-    def approval_filter(record, approval_condition)
-        approval_condition.include?(record.approved)
     end
     
 end

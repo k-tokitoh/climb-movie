@@ -43,24 +43,27 @@
       <% end %>
 
       <%= "#{post.problems.first.rock.area.name}(#{post.problems.first.rock.area.region.name})" %><br>
-
       <div class="video">
         <iframe
           src="https://www.youtube.com/embed/<%= post.video.html_safe %>?rel=0&amp;showinfo=0"
-          frameborder="0"                       #外枠非表示
+          frameborder="0"
           allow="autoplay; encrypted-media"
           allowfullscreen
         >
         </iframe>
       </div>
-
   　　<% if session[:admin] == true %>
-        <%= form_for(post) do |f| %>
-          <label><%= f.radio_button :approved, 'OK' %>OK</label><%= '    ' %> &nbsp&nbsp
-          <label><%= f.radio_button :approved, 'NG' %>NG</label><%= '    ' %> &nbsp&nbsp
-          <!--&nbspは空白を表すHTMLの特殊文字-->
+  　　<div class="request_ajax_update">
+        承認状況 : <span class="upproval_state" >
+        <%= post.approved %>
+        </span>
+        <%= form_for(post, remote: true, authenticity_token: true) do |f| %>
+        <!-- ↑ authenticity_token: true を書かないと行けない。なぜか。 !-->
+          <label class='radio_label'><%= f.radio_button :approved, 'OK' %>OK</label>
+          <label class='radio_label'><%= f.radio_button :approved, 'NG' %>NG</label>
           <%= f.submit '更新' %>
         <% end %>
+        </div>
       <% end %>
     </div>
     <hr>
