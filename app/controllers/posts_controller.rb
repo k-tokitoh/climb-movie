@@ -3,7 +3,6 @@ class PostsController < ApplicationController
     def index
         if session[:admin]                                                      #管理ユーザの場合、
             @posts = Post.all.page(params[:page]).per(10)                       #全てのポストをフィードして、
-            @approval ={ undecided: true, OK: true, NG: true }                  #承認状況チェックボックスの初期値を設定する
         else                                                                    #一般ユーザの場合、
             @posts = Post.where(approved: 'OK').page(params[:page]).per(10)     #公開が許可されたポストのみをフィードする
         end
@@ -47,8 +46,7 @@ class PostsController < ApplicationController
             'rocks.name as rock, ' +
             'problems.name as problem, ' +
             'problems.grade as grade, ' +
-            'posts.id as post_id, ' +
-            'posts.approved as approved'
+            'posts.id as post_id, '
         q = params[:q].gsub(/\p{blank}/,' ')        #検索クエリの全角スペースを半角スペースに置換する
 
         if params.has_key?(:approval)
@@ -60,10 +58,12 @@ class PostsController < ApplicationController
         #ex. approval_condition = ["OK", "NG"]
 
         #検索対象となる情報をすべて含むactiverecord associationを取得する
-        db = Region.joins({areas: {rocks: {problems: :posts}}}).select(selection_string)
+        db = Region.joins({areas: {rocks: {problems: :posts}}}).where(posts: {approved: approval_condition}).select(selection_string)
+        #byebug
         matched_ids =
             #各レコードについて、複数の検索条件全てに合致するかをしらべて
-            db.select{ |record| approval_filter(record, approval_condition) && freeword_search(record, q)
+            #db.select{ |record| approval_filter(record, approval_condition) && freeword_search(record, q)
+            db.select{ |record| freeword_search(record, q)
             #すべての検索条件に合致する場合のみpost_idを記録する
             }.map{ |record| record.post_id}
 
