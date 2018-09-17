@@ -2,12 +2,36 @@
   <%= "管理者としてログインしています" %>
   <%= link_to 'Logout', logout_path, method: :delete %><br>
   <%= link_to 'Youtube動画を取得する', youtubeAPI_path, method: :get %>
-<% end %>
-
-<%= form_tag("/search", method: "get") do %>
-  <%= label_tag(:q, "フリーワード") %>
-  <%= text_field_tag(:q) %>
-  <%= submit_tag("Search") %>
+  
+  <%= form_tag("/search", method: "get") do %>
+    <!--paramsが承認状況の条件をもっていなければ、全ての承認状況を表示対象にする-->
+    <% if params.has_key?(:approval) %>
+      <% undecided = params[:approval][:undecided] %>
+      <% ok = params[:approval][:OK] %>
+      <% ng = params[:approval][:NG] %>
+    <% else %>
+      <% undecided, ok, ng = true, true, true %>
+    <% end %>
+    
+    <!-- オブジェクト名、プロパティ名（チェックが入っていた場合にparams[オブジェクト名]に格納される値）、初期値 -->
+    <%= check_box_tag( 'approval[undecided]', true, undecided) %>
+    <!-- オブジェクト名（checkboxtagと対応させる）、ラベルとして表示される文字列 -->
+    <%= label_tag('approval[undecided]', "undecided") %>
+    <%= check_box_tag('approval[OK]', true, ok) %>
+    <%= label_tag('approval[OK]', "OK") %>
+    <%= check_box_tag('approval[NG]', true, ng) %>
+    <%= label_tag('approval[NG]', "NG") %>
+    <%= label_tag(:q, "フリーワード") %>
+    <%= text_field_tag(:q) %>
+    <%= submit_tag("Search") %>
+  <% end %>
+  
+<% else %>
+  <%= form_tag("/search", method: "get") do %>  
+    <%= label_tag(:q, "フリーワード") %>
+    <%= text_field_tag(:q) %>
+    <%= submit_tag("Search") %>
+  <% end %>
 <% end %>
 
 

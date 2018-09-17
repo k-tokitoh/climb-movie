@@ -1,10 +1,15 @@
 class PostsController < ApplicationController
     
     def index
-        @posts = Post.all.page(params[:page]).per(10)
+        if session[:admin]                                                      #管理ユーザの場合、
+            @posts = Post.all.page(params[:page]).per(10)                       #全てのポストをフィードして、
+            @approval ={ undecided: true, OK: true, NG: true }                  #承認状況チェックボックスの初期値を設定する
+        else                                                                    #一般ユーザの場合、
+            @posts = Post.where(approved: 'OK').page(params[:page]).per(10)     #公開が許可されたポストのみをフィードする
+        end
     end
     
-    def update
+    def update                                  #承認状況等の更新
         @post = Post.find(params[:id])
         @post.update_attributes(post_params)    #post_paramsはprivateで定義している
 
@@ -39,21 +44,31 @@ class PostsController < ApplicationController
         selection_string =                          # joinした後のActiveRecord_Relationでselectするときは、
             'regions.name as region, '+             # カラム名(nameとか)が重複するときは、asで名付け直さないといけないらしい
             'areas.name as area, ' +                # 今回は全て名付け直しておいた。
-            'rocks.name as rock, ' +                # 
-            'problems.name as problem, ' +          # 
+            'rocks.name as rock, ' +
+            'problems.name as problem, ' +
             'problems.grade as grade, ' +
-            'posts.id as post_id'
-            
-        matched_ids = Region.joins({areas: {rocks: {problems: :posts}}})
-                            .select(selection_string).select{ |rec|             # joinして得たレコードrecに対し
-            words = [rec.region, rec.area, rec.rock, rec.problem, rec.grade]
-            params[:q].split().all?{ |qword|            # クエリをsplitして得られた各単語qwordに対して
-                words.any?{ |word|                      # そのqwordが単語リストwordsに
-                    word.include?(qword)                # 部分文字列として登場するか
-                }                                       # 1回でも登場したらtrueを返す
-            }
-        }.map{ |rec| rec.post_id}
-        @posts = Post.where(id: matched_ids).page(params[:page]).per(10)              # 選択されたidのみ表示する
+            'posts.id as post_id, ' +
+            'posts.approved as approved'
+        q = params[:q].gsub(/\p{blank}/,' ')        #検索クエリの全角スペースを半角スペースに置換する
+
+        if params.has_key?(:approval)
+            approval_condition = params[:approval].keys.map{|key|key.to_s}
+        else
+            approval_condition = []
+        end
+        #ex. params[:approval] = {"OK"=>"true", "NG"=>"true"}
+        #ex. approval_condition = ["OK", "NG"]
+
+        #検索対象となる情報をすべて含むactiverecord associationを取得する
+        db = Region.joins({areas: {rocks: {problems: :posts}}}).select(selection_string)
+        matched_ids =
+            #各レコードについて、複数の検索条件全てに合致するかをしらべて
+            db.select{ |record| approval_filter(record, approval_condition) && freeword_search(record, q)
+            #すべての検索条件に合致する場合のみpost_idを記録する
+            }.map{ |record| record.post_id}
+
+        @posts = Post.where(id: matched_ids).page(params[:page]).per(10)    # 選択されたidのみ表示する
+
         render 'index'
     end
     
@@ -62,17 +77,20 @@ class PostsController < ApplicationController
     def post_params
       params.require(:post).permit(:approved)
     end
-    
-    def get_words(post_id:)
-        ps = Problem.includes(:posts).where('posts.id'=>post_id)    # idがpost_idのpostに紐づく課題たち
-        psnames = ps.pluck(:name, :grade).flatten.uniq              # 課題名と級を格納した配列,flattenで二次元配列を一次元配列にする
-        rocknames = ps.pluck(:rock_id).uniq.map{ |rock_id|          # 各課題の岩idに対し(重複をのぞいてから)
-            rock = Rock.find(rock_id)                               # 岩を取得
-            area = Area.find(rock.area_id)                          # エリア取得
-            region = Region.find(area.region_id)                    # 地方取得
-            [rock.name, area.name, region.name]                     # 岩、エリア、地方の名前
-        }.flatten.uniq               # 複数の岩に渡るpostではここで、さらに連結される(実際はあまりないか?)
-        psnames + rocknames          # 連結された課題名と、岩名をくっつける
+
+    def freeword_search(record,q)
+        words = [record.region, record.area, record.rock, record.problem, record.grade]
+        match_or_not =
+            q.split().all?{ |qword|             # クエリをsplitして得られた各単語qwordに対して
+                words.any?{ |word|              # そのqwordが単語リストwordsに
+                    word.include?(qword)        # 部分文字列として登場するか
+                }                               # 1回でも登場したらtrueを返す
+            }                                           
+        return match_or_not
+    end
+
+    def approval_filter(record, approval_condition)
+        approval_condition.include?(record.approved)
     end
     
 end
