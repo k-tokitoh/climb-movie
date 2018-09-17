@@ -44,23 +44,30 @@ class PostsController < ApplicationController
         selection_string =                          # joinした後のActiveRecord_Relationでselectするときは、
             'regions.name as region, '+             # カラム名(nameとか)が重複するときは、asで名付け直さないといけないらしい
             'areas.name as area, ' +                # 今回は全て名付け直しておいた。
-            'rocks.name as rock, ' +                 
-            'problems.name as problem, ' +           
+            'rocks.name as rock, ' +
+            'problems.name as problem, ' +
             'problems.grade as grade, ' +
             'posts.id as post_id, ' +
             'posts.approved as approved'
         q = params[:q].gsub(/\p{blank}/,' ')        #検索クエリの全角スペースを半角スペースに置換する
-        
-        approval_condition = params[:approval].keys.map{|key|key.to_s} 
+
+        if params.has_key?(:approval)
+            approval_condition = params[:approval].keys.map{|key|key.to_s}
+        else
+            approval_condition = []
+        end
         #ex. params[:approval] = {"OK"=>"true", "NG"=>"true"}
         #ex. approval_condition = ["OK", "NG"]
 
+        #検索対象となる情報をすべて含むactiverecord associationを取得する
         db = Region.joins({areas: {rocks: {problems: :posts}}}).select(selection_string)
         matched_ids =
+            #各レコードについて、複数の検索条件全てに合致するかをしらべて
             db.select{ |record| approval_filter(record, approval_condition) && freeword_search(record, q)
+            #すべての検索条件に合致する場合のみpost_idを記録する
             }.map{ |record| record.post_id}
 
-        @posts = Post.where(id: matched_ids).page(params[:page]).per(10)              # 選択されたidのみ表示する
+        @posts = Post.where(id: matched_ids).page(params[:page]).per(10)    # 選択されたidのみ表示する
 
         render 'index'
     end
