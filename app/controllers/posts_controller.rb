@@ -11,8 +11,7 @@ class PostsController < ApplicationController
     def update                                  #承認状況等の更新
         @post = Post.find(params[:id])
         @post.update_attributes(post_params)    #post_paramsはprivateで定義している
-
-        redirect_to '/'
+        render plain: @post.approved            # @postの承認状況(を表すテキスト)を送る
     end
 
     def get_youtube_videos

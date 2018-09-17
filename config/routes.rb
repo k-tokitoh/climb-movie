@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   delete 'logout', to: 'sessions#destroy'
 
   get 'youtubeAPI', to: 'posts#get_youtube_videos'
-  get 'search', to: 'posts#search'
+  get 'search', to: 'posts#search'                      # 検索
   
   get '/area/:id', to: 'areas#show'
 
