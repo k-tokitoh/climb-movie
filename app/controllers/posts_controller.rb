@@ -6,6 +6,7 @@ class PostsController < ApplicationController
         else                                                                    #一般ユーザの場合、
             @posts = Post.where(approved: 'OK').page(params[:page]).per(10)     #公開が許可されたポストのみをフィードする
         end
+        @posts_num = Post.where(approved: 'OK').length
     end
     
     def update                                  #承認状況等の更新
@@ -68,7 +69,7 @@ class PostsController < ApplicationController
             }.map{ |record| record.post_id}
 
         @posts = Post.where(id: matched_ids).page(params[:page]).per(10)    # 選択されたidのみ表示する
-
+        @posts_num = Post.where(approved: 'OK').length
         render 'index'
     end
     
