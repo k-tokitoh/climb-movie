@@ -33,13 +33,3 @@ ul{
 .radio_label{
     margin: 5px;
 }
-
-/* パソコン用設定 */
-/* 見やすいように暫定的に設定しておきます */
-@media screen and (min-width:641px) {
-    .posts {
-        width: 30%;
-        margin: 0 auto 0;
-        padding:0 0 0;
-    }
-}

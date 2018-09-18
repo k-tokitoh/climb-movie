@@ -1,3 +1,4 @@
+<p><%= @posts_num %>件のクライミング動画から検索</p>
 <% if session[:admin] == true %>
   <%= "管理者としてログインしています" %>
   <%= link_to 'Logout', logout_path, method: :delete %><br>
@@ -12,7 +13,6 @@
     <% else %>
       <% undecided, ok, ng = true, true, true %>
     <% end %>
-    
     <!-- オブジェクト名、プロパティ名（チェックが入っていた場合にparams[オブジェクト名]に格納される値）、初期値 -->
     <%= check_box_tag( 'approval[undecided]', true, undecided) %>
     <!-- オブジェクト名（checkboxtagと対応させる）、ラベルとして表示される文字列 -->
@@ -21,15 +21,13 @@
     <%= label_tag('approval[OK]', "OK") %>
     <%= check_box_tag('approval[NG]', true, ng) %>
     <%= label_tag('approval[NG]', "NG") %>
-    <%= label_tag(:q, "フリーワード") %>
-    <%= text_field_tag(:q) %>
+    <%= text_field_tag :q, nil, placeholder: '検索ワード' %>
     <%= submit_tag("Search") %>
   <% end %>
   
 <% else %>
   <%= form_tag("/search", method: "get") do %>  
-    <%= label_tag(:q, "フリーワード") %>
-    <%= text_field_tag(:q) %>
+    <%= text_field_tag :q, nil, placeholder: '検索ワード' %>
     <%= submit_tag("Search") %>
   <% end %>
 <% end %>
