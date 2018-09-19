@@ -36,12 +36,12 @@
 <ul>
   <% @posts.each do |post| %>
     <div class='posts'>
-      <% post.problems.each do |problem| %>
-        <%= "#{problem.name}#{problem.grade}(#{problem.rock.name})" %>
-      <% end %>
-
-      <%= "#{post.problems.first.rock.area.name}(#{post.problems.first.rock.area.region.name})" %><br>
-      <div class="video">
+      <a class="post_title">
+        <%= post.problems.map{ |problem| 
+          "#{problem.name}#{problem.grade}(#{problem.rock.name})"}.join %>
+        <%= "#{post.problems.first.rock.area.name}(#{post.problems.first.rock.area.region.name})" %>
+      </a>
+      <div class="collapse video">
         <iframe
           src="https://www.youtube.com/embed/<%= post.video.html_safe %>?rel=0&amp;showinfo=0"
           frameborder="0"
@@ -50,6 +50,7 @@
         >
         </iframe>
       </div>
+
   　　<% if session[:admin] == true %>
   　　<div class="request_ajax_update">
         承認状況 : <span class="upproval_state" >
