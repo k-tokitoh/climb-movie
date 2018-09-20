@@ -8,3 +8,9 @@ $ ->                                                        # 画面が表示さ
       $(this).children('.upproval_state').html(data.responseText)       # この要素の下のupproval_stateクラスの要素の中身htmlを
                                                                         # 受け取ったdataのresponseTextで置き換える
                                                                         # これはposts_controlのrender :plainで入れている
+  
+  
+  #$('.post_title')
+  #  .on 'click',  ->
+  #    $(this).siblings('.collapse').collapse('toggle')
+  

@@ -31,24 +31,27 @@
     <%= submit_tag("Search") %>
   <% end %>
 <% end %>
-
-
 <ul>
-  <% @posts.each do |post| %>
+  <% @posts.each_with_index do |post, i| %>
     <div class='posts'>
-      <% post.problems.each do |problem| %>
-        <%= "#{problem.name}#{problem.grade}(#{problem.rock.name})" %>
-      <% end %>
-
-      <%= "#{post.problems.first.rock.area.name}(#{post.problems.first.rock.area.region.name})" %><br>
+      <div>
+        <button class="btn btn-primary" data-toggle="collapse" data-target="#collapse-target<%= i %>" role="button" aria-expanded="false">
+          <%= post.problems.map{ |problem| 
+            "#{problem.name}#{problem.grade}(#{problem.rock.name})"}.join %>
+          <%= "#{post.problems.first.rock.area.name}(#{post.problems.first.rock.area.region.name})" %>
+          <span class="caret"></span>
+        </button>
+      </div>
+      <div class="collapse show" id="collapse-target<%= i %>">
+        <br>
       <div class="video">
         <iframe
           src="https://www.youtube.com/embed/<%= post.video.html_safe %>?rel=0&amp;showinfo=0"
           frameborder="0"
           allow="autoplay; encrypted-media"
           allowfullscreen
-        >
-        </iframe>
+        ></iframe>
+      </div>
       </div>
   　　<% if session[:admin] == true %>
   　　<div class="request_ajax_update">
