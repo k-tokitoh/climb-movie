@@ -10,7 +10,7 @@ $ ->                                                        # 画面が表示さ
                                                                         # これはposts_controlのrender :plainで入れている
   
   
-  $('.post_title')
-    .on 'click',  ->
-      $(this).siblings('.collapse').collapse('toggle')
+  #$('.post_title')
+  #  .on 'click',  ->
+  #    $(this).siblings('.collapse').collapse('toggle')
   
