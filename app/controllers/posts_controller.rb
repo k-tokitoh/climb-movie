@@ -58,7 +58,10 @@ class PostsController < ApplicationController
             'posts.id as post_id'
         db = Region.joins(areas: {rocks: {problems: :posts}})       # 順次joinする
                     .where(posts: {approved: approval_condition})   # approval_conditonにマッチするpostのみ取り出す
+                    .where(problems: {grade: params[:grade][:lower]..params[:grade][:upper]})
                     .select(selection_string)                       # 検索に用いるカラムを取り出す
+
+
                     
         q = params[:q].gsub(/\p{blank}/,' ').split()    #検索クエリの全角スペースを半角スペースに置換してsplit
 
