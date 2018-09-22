@@ -11,17 +11,21 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
   </head>
 
+
   <header>
-    <%= image_tag 'title.png' %>
+    <%= link_to image_tag('title.png', { :border => '0', :alt => 'title'}), '/' %>
+    <!--<%= image_tag 'title.png' %>-->
   </header>
 
   <body>
-    <%= "デバッグ用表示 params:#{params}"  %><br>
+    <!--<%= "デバッグ用表示 params:#{params}"  %><br>-->
     <% flash.each do |message_type, message| %>
       <%= message %><br>
     <% end %>
     <%= yield %>
-    
-
   </body>
+
+  <footer>
+    <p>(c) 2018 クライムービー</p>
+  </footer>
 </html>
