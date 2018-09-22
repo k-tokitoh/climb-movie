@@ -19,7 +19,7 @@ class PostsController < ApplicationController
         #以下の３行、ここに書くのでよいのかな？
         require 'google/apis/youtube_v3'
         youtube = Google::Apis::YoutubeV3::YouTubeService.new       
-        youtube.key = "AIzaSyCkC3fQVnKl2htGzQuF_x6ovTCoEzOO1ro"     #APIkey
+        youtube.key = ENV["YOUTUBE_API_KEY"]     #'.env'ファイルで定義
         
         @problems = Problem.all
         @problems.each do |problem|
@@ -39,7 +39,7 @@ class PostsController < ApplicationController
         redirect_to '/'
     end
     
-   def search
+    def search
        if session[:admin]
            if params.has_key?(:approval)           # 検索条件の認証状態チェックボックスに一つでもチェックがある場合
                approval_condition = params[:approval].keys.map{|key|key.to_s}

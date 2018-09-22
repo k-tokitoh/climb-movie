@@ -7,7 +7,7 @@
 #   Character.create(name: 'Luke', movie: movies.first)
 require 'csv'
 
-User.create(name: 'admin', email:'admin@climbmania.jp', password: 'yamashitayuji', admin: true)
+User.create(name: ENV['ADMIN_NAME'], email:ENV['ADMIN_EMAIL'], password: ENV['ADMIN_PASSWORD'], admin: true)
 
 CSV.foreach('db/climbmania_db.csv', headers: true, encoding: "Shift_JIS:UTF-8") do |record|     #CSVを１行ずつ読みこむ
 
