@@ -37,22 +37,19 @@
 <div class='posts'>
   <% @posts.each_with_index do |post, i| %>
     <div class='post'>
-      <div class="collapse show" id="collapse-target<%= i %>">
-        <div class="video">
-          <iframe
-            src="https://www.youtube.com/embed/<%= post.video.html_safe %>?rel=0&amp;showinfo=0"
-            frameborder="0"
-            allow="autoplay; encrypted-media"
-            allowfullscreen
-          ></iframe>
+      <!--<div class="collapse show" id="collapse-target<%= i %>">-->
+        <div class="thumbnail">
+          <a href="https://www.youtube.com/embed/<%= post.video.html_safe %>?" data-lity="data-lity">
+            <%= image_tag("http://img.youtube.com/vi/#{post.video.html_safe}/mqdefault.jpg", { :border => '0', :alt => 'title'}) %>
+          </a>
         </div>
-      </div>
+      <!--</div>-->
       <div>
         <!--<button class="btn btn-primary" data-toggle="collapse" data-target="#collapse-target<%= i %>" role="button" aria-expanded="false">-->
           <b><%= post.problems.map{ |problem| 
             "#{problem.name}#{@grade_correspondence.to_h.invert[problem.grade]}"}.join %></b><br>
           <span class='region_area'>
-            <%= "#{post.problems.first.rock.area.region.name},#{post.problems.first.rock.area.name}" %>
+            <%= "#{post.problems.first.rock.area.name},#{post.problems.first.rock.area.region.name}" %>
           </span>
           <span class="caret"></span>
         </button>

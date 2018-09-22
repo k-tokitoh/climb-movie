@@ -30,10 +30,11 @@ gem 'jbuilder', '~> 2.5'
 # Use Redis adapter to run Action Cable in production
 # gem 'redis', '~> 3.0'
 # Use ActiveModel has_secure_password
-gem 'bcrypt', '~> 3.1.7'
+gem 'bcrypt', '~> 3.1.7'                  #パスワードの暗号化
 gem 'google-api-client', '~> 0.11'
-gem 'kaminari'
-gem 'hirb'
+gem 'kaminari'                            #ページネーション
+gem 'hirb'                                #コンソール画面でのDBレコード表示を整える
+gem 'dotenv-rails'                        #環境変数の設定
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
