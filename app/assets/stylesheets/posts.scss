@@ -2,14 +2,18 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
-ul{
-    padding:0 0 0;
+.posts {
+    width:98%;
+    margin:0 auto 0;
 }
 
-.posts {
-    width: 90%;
-    margin: 0 auto 0;
+.post {
+    width: 96%;
+    margin: 10px auto 10px;
     padding:0 0 0;
+    border:1px;
+    border-style:solid;
+    box-shadow:0px 0px 10px;
 }
 
 .video{
@@ -26,10 +30,36 @@ ul{
     height:100%;
 }
 
-.paginator {
-  text-align: center;
+.region_area{
+    color:gray;
 }
+
+.paginator {
+    text-align:center;
+//   margin:10px 50px 10px;
+}
+
+.pagination{
+    display:inline-block;
+}
+
 
 .radio_label{
     margin: 5px;
+}
+
+@media screen and (min-width:680px) {
+  .post {
+    width: 48.5%;
+    margin: 10px 0.5% 10px;
+    display:inline-block;
+  }
+}
+
+@media screen and (min-width:1000px) {
+    .post {
+        width: 32%;
+        margin: 10px 0.5% 10px;
+        display:inline-block;
+    }
 }

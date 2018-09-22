@@ -1,67 +1,61 @@
 <p><%= @posts_num %>件のクライミング動画から検索</p>
-<% grade_correspondence = [['10級', 1], ['9級', 2],['8級', 3], ['7級', 4],['6級', 5], ['5級', 6],['4級', 7], ['3級', 8],['2級', 9], ['1級', 10],['初段', 11], ['二段', 12],['三段', 13], ['四段', 14],['五段', 15], ['六段', 16]] %>
+<% @grade_correspondence = [['10級', 1], ['9級', 2],['8級', 3], ['7級', 4],['6級', 5], ['5級', 6],['4級', 7], ['3級', 8],['2級', 9], ['1級', 10],['初段', 11], ['二段', 12],['三段', 13], ['四段', 14],['五段', 15], ['六段', 16]] %>
 
-<% if session[:admin] == true %>
-  <%= "管理者としてログインしています" %>
-  <%= link_to 'Logout', logout_path, method: :delete %><br>
-  <%= link_to 'Youtube動画を取得する', youtubeAPI_path, method: :get %>
-  
-  <%= form_tag("/search", method: "get") do %>
-    <!--paramsが承認状況の条件をもっていなければ、全ての承認状況を表示対象にする-->
-    <% if params.has_key?(:approval) %>
-      <% undecided = params[:approval][:undecided] %>
-      <% ok = params[:approval][:OK] %>
-      <% ng = params[:approval][:NG] %>
-    <% else %>
-      <% undecided, ok, ng = true, true, true %>
+<div class='search-form'>
+  <% if session[:admin] == true %>
+    <%= "管理者としてログインしています" %>
+    <%= link_to 'Logout', logout_path, method: :delete %><br>
+    <%= link_to 'Youtube動画を取得する', youtubeAPI_path, method: :get %>
+    
+    <%= form_tag("/search", method: "get", class: "form-group") do %>
+      <!--paramsが承認状況の条件をもっていなければ、全ての承認状況を表示対象にする-->
+      <% if params.has_key?(:approval) %>
+        <% undecided = params[:approval][:undecided] %>
+        <% ok = params[:approval][:OK] %>
+        <% ng = params[:approval][:NG] %>
+      <% else %>
+        <% undecided, ok, ng = true, true, true %>
+      <% end %>
+      <!-- オブジェクト名、プロパティ名（チェックが入っていた場合にparams[オブジェクト名]に格納される値）、初期値 -->
+      <%= check_box_tag( 'approval[undecided]', true, undecided) %>
+      <!-- オブジェクト名（checkboxtagと対応させる）、ラベルとして表示される文字列 -->
+      <%= label_tag('approval[undecided]', "undecided") %>
+      <%= check_box_tag('approval[OK]', true, ok) %>
+      <%= label_tag('approval[OK]', "OK") %>
+      <%= check_box_tag('approval[NG]', true, ng) %>
+      <%= label_tag('approval[NG]', "NG") %>
+      <%= render 'search' %>
     <% end %>
-    <!-- オブジェクト名、プロパティ名（チェックが入っていた場合にparams[オブジェクト名]に格納される値）、初期値 -->
-    <%= check_box_tag( 'approval[undecided]', true, undecided) %>
-    <!-- オブジェクト名（checkboxtagと対応させる）、ラベルとして表示される文字列 -->
-    <%= label_tag('approval[undecided]', "undecided") %>
-    <%= check_box_tag('approval[OK]', true, ok) %>
-    <%= label_tag('approval[OK]', "OK") %>
-    <%= check_box_tag('approval[NG]', true, ng) %>
-    <%= label_tag('approval[NG]', "NG") %>
-    <%= text_field_tag :q, nil, placeholder: '検索ワード' %>
-
-    <!--select(オブジェクト名, プロパティ名, タグの情報 [, オプション])-->
-    <%= select(:grade, :lower, grade_correspondence, selected:1) %>
-    ～<%= select(:grade, :upper, grade_correspondence, selected:16) %>
-
-    <%= submit_tag("Search") %>
+    
+  <% else %>
+    <%= form_tag("/search", method: "get", class: "form-group") do %>  
+      <%= render 'search' %>
+    <% end %>
   <% end %>
-  
-<% else %>
-  <%= form_tag("/search", method: "get") do %>  
-    <%= text_field_tag :q, nil, placeholder: '検索ワード' %>
-    <!--select(オブジェクト名, プロパティ名, タグの情報 [, オプション])-->
-    <%= select(:grade, :lower, grade_correspondence, selected:1) %>
-    ～<%= select(:grade, :upper, grade_correspondence, selected:16) %>
-    <%= submit_tag("Search") %>
-  <% end %>
-<% end %>
-<ul>
+</div>
+
+<div class='posts'>
   <% @posts.each_with_index do |post, i| %>
-    <div class='posts'>
+    <div class='post'>
+      <div class="collapse show" id="collapse-target<%= i %>">
+        <div class="video">
+          <iframe
+            src="https://www.youtube.com/embed/<%= post.video.html_safe %>?rel=0&amp;showinfo=0"
+            frameborder="0"
+            allow="autoplay; encrypted-media"
+            allowfullscreen
+          ></iframe>
+        </div>
+      </div>
       <div>
-        <button class="btn btn-primary" data-toggle="collapse" data-target="#collapse-target<%= i %>" role="button" aria-expanded="false">
-          <%= post.problems.map{ |problem| 
-            "#{problem.name}#{grade_correspondence.to_h.invert[problem.grade]}(#{problem.rock.name})"}.join %>
-          <%= "#{post.problems.first.rock.area.name}(#{post.problems.first.rock.area.region.name})" %>
+        <!--<button class="btn btn-primary" data-toggle="collapse" data-target="#collapse-target<%= i %>" role="button" aria-expanded="false">-->
+          <b><%= post.problems.map{ |problem| 
+            "#{problem.name}#{@grade_correspondence.to_h.invert[problem.grade]}"}.join %></b><br>
+          <span class='region_area'>
+            <%= "#{post.problems.first.rock.area.region.name},#{post.problems.first.rock.area.name}" %>
+          </span>
           <span class="caret"></span>
         </button>
-      </div>
-      <div class="collapse show" id="collapse-target<%= i %>">
-        <br>
-      <div class="video">
-        <iframe
-          src="https://www.youtube.com/embed/<%= post.video.html_safe %>?rel=0&amp;showinfo=0"
-          frameborder="0"
-          allow="autoplay; encrypted-media"
-          allowfullscreen
-        ></iframe>
-      </div>
       </div>
   　　<% if session[:admin] == true %>
   　　<div class="request_ajax_update">
@@ -77,9 +71,9 @@
         </div>
       <% end %>
     </div>
-    <hr>
+
   <% end %>
-</ul>
+</div>
 
 <div class="paginator">
   <%= paginate @posts %>

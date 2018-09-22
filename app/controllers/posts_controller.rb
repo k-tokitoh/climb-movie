@@ -2,9 +2,9 @@ class PostsController < ApplicationController
     
     def index
         if session[:admin]                                                      #管理ユーザの場合、
-            @posts = Post.all.page(params[:page]).per(10)                       #全てのポストをフィードして、
+            @posts = Post.all.page(params[:page]).per(12)                       #全てのポストをフィードして、
         else                                                                    #一般ユーザの場合、
-            @posts = Post.where(approved: 'OK').page(params[:page]).per(10)     #公開が許可されたポストのみをフィードする
+            @posts = Post.where(approved: 'OK').page(params[:page]).per(12)     #公開が許可されたポストのみをフィードする
         end
         @posts_num = Post.where(approved: 'OK').length
     end
@@ -39,12 +39,16 @@ class PostsController < ApplicationController
         redirect_to '/'
     end
     
-    def search
-        if params.has_key?(:approval)           # 検索条件の認証状態チェックボックスに一つでもチェックがある場合
-            approval_condition = params[:approval].keys.map{|key|key.to_s}
-        else
-            approval_condition = []
-        end
+   def search
+       if session[:admin]
+           if params.has_key?(:approval)           # 検索条件の認証状態チェックボックスに一つでもチェックがある場合
+               approval_condition = params[:approval].keys.map{|key|key.to_s}
+           else
+               approval_condition = []
+           end
+       else
+           approval_condition = ['OK']
+       end
         #ex. params[:approval] = {"OK"=>"true", "NG"=>"true"}
         #ex. approval_condition = ["OK", "NG"]
 
@@ -54,11 +58,10 @@ class PostsController < ApplicationController
             'areas.name as area, ' +                # 今回は全て名付け直しておいた。
             'rocks.name as rock, ' +
             'problems.name as problem, ' +
-            'problems.grade as grade, ' +
             'posts.id as post_id'
         db = Region.joins(areas: {rocks: {problems: :posts}})       # 順次joinする
                     .where(posts: {approved: approval_condition})   # approval_conditonにマッチするpostのみ取り出す
-                    .where(problems: {grade: params[:grade][:lower]..params[:grade][:upper]})
+                    .where(problems: {grade: params[:grade][:lower].to_i..params[:grade][:upper].to_i})
                     .select(selection_string)                       # 検索に用いるカラムを取り出す
 
 
@@ -71,7 +74,7 @@ class PostsController < ApplicationController
             #すべての検索条件に合致する場合のみpost_idを記録する
             }.map{ |record| record.post_id}
 
-        @posts = Post.where(id: matched_ids).page(params[:page]).per(10)    # 選択されたidのみ表示する
+        @posts = Post.where(id: matched_ids).page(params[:page]).per(12)    # 選択されたidのみ表示する
         @posts_num = Post.where(approved: 'OK').length
         render 'index'
     end
@@ -83,7 +86,7 @@ class PostsController < ApplicationController
     end
 
     def freeword_search(record, query_words)
-        words = [record.region, record.area, record.rock, record.problem, record.grade]
+        words = [record.region, record.area, record.rock, record.problem]
         match_or_not =
             query_words.all?{ |qword|             # クエリをsplitして得られた各単語qwordに対して
                 words.any?{ |word|              # そのqwordが単語リストwordsに

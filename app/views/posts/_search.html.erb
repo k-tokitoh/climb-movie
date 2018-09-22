@@ -1,0 +1,25 @@
+<!--テキストフィールドの初期値として、既に検索クエリがあればそれを、なければデフォルト値を用意する。-->
+<% if params[:q].present?%>
+    <% q = params[:q] %>
+<% else %>
+    <% q = '岩場名・課題名で検索' %>
+<% end %>
+
+<!--グレード検索の初期値として、既に検索値があればそれを、なければデフォルト値を用意する。-->
+<% if params[:grade].present? %>
+    <% grade_lower = params[:grade][:lower] %>
+<% else %>
+    <% grade_lower = 1 %>
+<% end %>
+
+<% if params[:grade].present? %>
+    <% grade_upper = params[:grade][:upper] %>
+<% else %>
+    <% grade_upper = 16 %>
+<% end %>
+
+<%= text_field_tag :q, nil, placeholder: q, class: 'form-control col-md-6' %>
+<!--select(オブジェクト名, プロパティ名, タグの情報 [, オプション])-->
+<%= select(:grade, :lower, @grade_correspondence, selected: grade_lower, class: 'form-control') %>
+～<%= select(:grade, :upper, @grade_correspondence, selected: grade_upper, class: 'form-control') %>
+<%= submit_tag("Search", class: "btn btn-primary") %>
