@@ -39,7 +39,7 @@ class PostsController < ApplicationController
         redirect_to '/'
     end
     
-   def search
+    def search
        if session[:admin]
            if params.has_key?(:approval)           # 検索条件の認証状態チェックボックスに一つでもチェックがある場合
                approval_condition = params[:approval].keys.map{|key|key.to_s}
@@ -79,6 +79,15 @@ class PostsController < ApplicationController
         render 'index'
     end
     
+    def set_refine_search
+        if false
+        if params[:id] == 'region'
+            render partial: 'refine_search_card', locals: { id: 'area', items: Area.all.pluck('name') , title: 'エリア'}
+        else
+            render plain: '1'
+        end
+    end
+    
     private
 
     def post_params
@@ -95,5 +104,7 @@ class PostsController < ApplicationController
             }                                           
         return match_or_not
     end
+    
+    
     
 end

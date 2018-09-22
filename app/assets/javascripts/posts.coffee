@@ -10,7 +10,12 @@ $ ->                                                        # 画面が表示さ
                                                                         # これはposts_controlのrender :plainで入れている
   
   
-  #$('.post_title')
-  #  .on 'click',  ->
-  #    $(this).siblings('.collapse').collapse('toggle')
-  
+  $('.rs-word')
+    .on 'click', ->
+      $(this).closest('.refine-search').find('.rs-title').text($(this).text())    # 上に設定
+      $(this).closest('form')                         # フォームを選択
+        .find('.rs-selection').val($(this).text())    # 隠しフィールドに詰める
+        .submit()                                     # 送信.....が、このあと何も帰ってこない。諦めるか....。
+        
+
+        
