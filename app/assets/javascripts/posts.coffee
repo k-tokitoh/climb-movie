@@ -2,21 +2,24 @@
 # All this logic will automatically be available in application.js.
 # You can use CoffeeScript in this file: http://coffeescript.org/
 
-$ ->                                                        # 画面が表示されたら、以下を実行せよ
+$(document).on 'turbolinks:load', ->                        # 画面が表示されたら、以下を実行せよ
   $('.request_ajax_update')                                 # request_ajax_updateクラスの要素に対し
     .on 'ajax:complete', (event, data, status, xhr) ->      # ajax:completeを受け取った時の動作(コールバック)を登録
       $(this).children('.upproval_state').html(data.responseText)       # この要素の下のupproval_stateクラスの要素の中身htmlを
                                                                         # 受け取ったdataのresponseTextで置き換える
                                                                         # これはposts_controlのrender :plainで入れている
   
-  $('.rs-query').change ->                                                    # クエリタグの中身変更したら、
-    text = ($(this).text().trim())
-    $(this).siblings('.rs-input').val(text)                                   # 自動でinputタグのval(クエリ)も変更する
-    if text != ""
-      $(this).closest('.refine-search').find('.collapse').collapse('hide')      # さらにそこの一覧も閉じる
-      $(this).closest('.refine-search').next('.refine-search').find('.collapse').collapse('show')      # さらにその下のクエリを全部消す
-    $(this).closest('.refine-search').next('.refine-search').find('.rs-query').text('').change()
-                
+  $('.rs-query').change ->                        # クエリタグの中身変更したら、
+    text = ($(this).text().trim())                # まずテキストを取り出し
+    $(this).siblings('.rs-input').val(text)       # 自動でinputタグのval(クエリ)も変更する
+    if text != ""                                 # さらに、何かしら空白以外が入った時は、
+      $(this).closest('.refine-search').find('.collapse').collapse('hide')                          # そこの一覧も閉じる
+      $(this).closest('.refine-search').next('.refine-search').find('.collapse').collapse('show')   # さらにその下の単語リストを開く
+    $(this).closest('.refine-search').next('.refine-search').find('.rs-query').text('').change()    # さらにそれ以下のクエリを消して
+  
+  $('.rs-clear-query')
+    .on 'click', -> 
+      $(this).closest('.refine-search').find('.rs-query').text("").change()
     
   $('.rs-card')                                         # <div id="rs-card-<%= id%>" class="collapse rs-card">
     .on 'show.bs.collapse', (e)->                       # 一覧が表示された時
@@ -32,7 +35,7 @@ $ ->                                                        # 画面が表示さ
       # 以下、実際に表示する場合まず、他のcollapseを全部閉じる
       $(this).closest('.refine-search').siblings('.refine-search').find('.collapse').collapse('hide')
       if to_show.length == 0
-        $(this).find('.card-body').empty().text('まだサイトに動画がありません...。')
+        $(this).find('.card-body').empty().text('まだサイトに動画がありません(>_<)')
       else
         $(this).find('.card-body').empty().append(get_table(id, to_show))   # 中身をからにしてから、新規に入れる
     
