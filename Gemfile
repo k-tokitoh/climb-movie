@@ -35,6 +35,7 @@ gem 'google-api-client', '~> 0.11'
 gem 'kaminari'                            #ページネーション
 gem 'hirb'                                #コンソール画面でのDBレコード表示を整える
 gem 'dotenv-rails'                        #環境変数の設定
+gem 'gon'                                 #jsとの連携
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development

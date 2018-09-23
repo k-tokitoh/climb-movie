@@ -22,4 +22,14 @@
 <!--select(オブジェクト名, プロパティ名, タグの情報 [, オプション])-->
 <%= select(:grade, :lower, @grade_correspondence, selected: grade_lower, class: 'form-control') %>
 ～<%= select(:grade, :upper, @grade_correspondence, selected: grade_upper, class: 'form-control') %>
+<div class="card col-md-6">
+  <a class="collapsed" data-toggle="collapse" data-target="#refine-search-box">
+    <div class="card-header" id="headingOne">絞り込み条件</div>
+  </a>
+  <div id="refine-search-box" class="collapse" >
+    <%= render partial: 'refine_search_card', locals: { id: 'region', items: Region.all.pluck('name') , title: '地域', default_word: params.fetch('地域', '') } %>
+    <%= render partial: 'refine_search_card', locals: { id: 'area', items: [] , title: '岩場', default_word: params.fetch('岩場', '')} %>
+    <%= render partial: 'refine_search_card', locals: { id: 'problem', items: [] , title: '課題', default_word: params.fetch('課題', '')} %>
+  </div>
+ </div>
 <%= submit_tag("Search", class: "btn btn-primary") %>

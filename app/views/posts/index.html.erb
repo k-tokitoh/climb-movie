@@ -33,10 +33,10 @@
     <% end %>
   <% end %>
 
-  <div id="refine-search">
-    <%= render partial: 'refine_search_card', locals: { id: 'region', items: Region.all.pluck('name') , title: '地域'} %>
-  </div>
   <div class='posts'>
+  <% if @posts.length == 0 %>
+    検索条件に合う動画がありません
+  <% end %>
   <% @posts.each_with_index do |post, i| %>
     <div class='post'>
       <!--<div class="collapse show" id="collapse-target<%= i %>">-->

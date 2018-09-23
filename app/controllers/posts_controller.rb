@@ -7,6 +7,8 @@ class PostsController < ApplicationController
             @posts = Post.where(approved: 'OK').page(params[:page]).per(12)     #公開が許可されたポストのみをフィードする
         end
         @posts_num = Post.where(approved: 'OK').length
+        gon.names = get_hash(Region.joins(areas: {rocks: :problems}).pluck('regions.name', 'areas.name', 'problems.name'))
+        
     end
     
     def update                                  #承認状況等の更新
@@ -63,8 +65,15 @@ class PostsController < ApplicationController
                     .where(posts: {approved: approval_condition})   # approval_conditonにマッチするpostのみ取り出す
                     .where(problems: {grade: params[:grade][:lower].to_i..params[:grade][:upper].to_i})
                     .select(selection_string)                       # 検索に用いるカラムを取り出す
-
-
+        if params[:'地域'] != ''
+            db = db.select{|record| record.region == params[:'地域']}
+        end
+        if params[:'岩場'] != ''
+            db = db.select{|record| record.area == params[:'岩場']}
+        end
+        if params[:'課題'] != ''
+            db = db.select{|record| record.problem == params[:'課題']}
+        end
                     
         q = params[:q].gsub(/\p{blank}/,' ').split()    #検索クエリの全角スペースを半角スペースに置換してsplit
 
@@ -76,11 +85,11 @@ class PostsController < ApplicationController
 
         @posts = Post.where(id: matched_ids).page(params[:page]).per(12)    # 選択されたidのみ表示する
         @posts_num = Post.where(approved: 'OK').length
+        gon.names = get_hash(Region.joins(areas: {rocks: :problems}).pluck('regions.name', 'areas.name', 'problems.name'))
         render 'index'
     end
     
     def set_refine_search
-        if false
         if params[:id] == 'region'
             render partial: 'refine_search_card', locals: { id: 'area', items: Area.all.pluck('name') , title: 'エリア'}
         else
@@ -105,6 +114,11 @@ class PostsController < ApplicationController
         return match_or_not
     end
     
-    
-    
+    def get_hash(arr)
+        if arr[0].length == 1
+            arr.map{|a| a[0]}
+        else
+            arr.group_by{|a| a[0]}.map{|k,v| [k, get_hash(v.map{ |a| a[1..-1]})]}
+        end
+    end
 end
