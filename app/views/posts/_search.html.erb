@@ -26,10 +26,14 @@
   <a class="collapsed" data-toggle="collapse" data-target="#refine-search-box">
     <div class="card-header" id="headingOne">絞り込み条件</div>
   </a>
-  <div id="refine-search-box" class="collapse" >
-    <%= render partial: 'refine_search_card', locals: { id: 'region', items: Region.all.pluck('name') , title: '地域', default_word: params.fetch('地域', '') } %>
-    <%= render partial: 'refine_search_card', locals: { id: 'area', items: [] , title: '岩場', default_word: params.fetch('岩場', '')} %>
-    <%= render partial: 'refine_search_card', locals: { id: 'problem', items: [] , title: '課題', default_word: params.fetch('課題', '')} %>
+  <% if params.fetch('region', '')+params.fetch('area', '')+params.fetch('problem', '')!='' %>
+    <div id="refine-search-box" class="collapse show" >
+    <% else %>
+    <div id="refine-search-box" class="collapse" >
+  <% end %>
+    <%= render partial: 'refine_search_card', locals: { id: 'region', title: '地域', display: 'block', default_word: params.fetch('region', '') } %>
+    <%= render partial: 'refine_search_card', locals: { id: 'area' , title: '岩場', dispaly: 'none', default_word: params.fetch('area', '')} %>
+    <%= render partial: 'refine_search_card', locals: { id: 'problem', title: '課題', dispaly: 'none', default_word: params.fetch('problem', '')} %>
   </div>
  </div>
 <%= submit_tag("Search", class: "btn btn-primary") %>

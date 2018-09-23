@@ -9,62 +9,62 @@ $ ->                                                        # 画面が表示さ
                                                                         # 受け取ったdataのresponseTextで置き換える
                                                                         # これはposts_controlのrender :plainで入れている
   
-  
-  $('.rs-word')
-    .on 'click', ->
-      area_name = $(this).text()
-      $(this).closest('.refine-search')
-        .find('.rs-title').text(area_name)    # 上に設定
-      $(this).closest('.refine-search')
-          .closest('.refine-search').find('.rs-input').val(area_name)
-      $(this).closest('.refine-search')
-        .nextAll('.refine-search').find('.rs-title').text('')
-      $(this).closest('.refine-search')
-          .nextAll('.refine-search').find('.rs-input').val('')
-      $(this).closest('.refine-search')
-        .nextAll('.refine-search').find('table').remove()
-      $(this).closest('.refine-search')
-        .next('.refine-search').find('.card-body').append(get_table('area', gon.names.find((x) -> x[0]==area_name)[1], 'problem'))
-      
-get_table = (id, items, next_id) ->
+  $('.rs-query').change ->                                                    # クエリタグの中身変更したら、
+    text = ($(this).text().trim())
+    $(this).siblings('.rs-input').val(text)                                   # 自動でinputタグのval(クエリ)も変更する
+    if text != ""
+      $(this).closest('.refine-search').find('.collapse').collapse('hide')      # さらにそこの一覧も閉じる
+      $(this).closest('.refine-search').next('.refine-search').find('.collapse').collapse('show')      # さらにその下のクエリを全部消す
+    $(this).closest('.refine-search').next('.refine-search').find('.rs-query').text('').change()
+                
+    
+  $('.rs-card')                                         # <div id="rs-card-<%= id%>" class="collapse rs-card">
+    .on 'show.bs.collapse', (e)->                       # 一覧が表示された時
+      id = $(this).prop('id').split('-')[-1..][0]       # idとは、region, area, problemなど
+      if id == 'region'                                 # regionタグの時
+        to_show = gon.names[id]                         # そのままとってこれる
+      else                                              # areas, problemsの時は直上のクエリから選択
+        upper_query  = $(this).closest('.refine-search').prev('.refine-search').find('.rs-query').text().trim()
+        if upper_query == ''    # 直上のクエリに何もない時(regionは例外S)
+          e.preventDefault()
+          return
+        to_show = gon.names[id].filter((x) -> x[0]==upper_query).map((x) -> x[1])
+      # 以下、実際に表示する場合まず、他のcollapseを全部閉じる
+      $(this).closest('.refine-search').siblings('.refine-search').find('.collapse').collapse('hide')
+      if to_show.length == 0
+        $(this).find('.card-body').empty().text('まだサイトに動画がありません...。')
+      else
+        $(this).find('.card-body').empty().append(get_table(id, to_show))   # 中身をからにしてから、新規に入れる
+    
+get_table = (id, items) ->
   table = document.createElement('table')     # テーブル作成
   table.setAttribute('class','table')         # クラス指定
+  
   tbody = document.createElement('tbody')     # テーブルの中身
   table.appendChild(tbody)                    # くっつける
-  newitems = items.map((x,i) -> i).filter((i) -> i%4==0).map((i)-> items.slice(i, i+4))    # 表示項目を4つづつに区切る
-  console.log(newitems)
-  for row in newitems                         # 4つ単位で
+  
+  column_num = 4
+  items = items.map((x,i) -> i)
+              .filter((i) -> i%column_num==0)
+              .map((i)-> items.slice(i, i+column_num))    # 表示項目を4つづつに区切る
+  for row in items                            # 4つ単位で
     tr = document.createElement('tr')         # 行を作る
-    tbody.appendChild(tr)                     # 行を追加
+    tbody.appendChild(tr)                     # 行を表に追加
     for item in row                           # 行の中身を作成していく
       td = document.createElement('td')       # 項目作成
       tr.appendChild(td)                      # 追加
 
       a = document.createElement('a')
+      a.setAttribute('class',"rs-word")
       a.setAttribute('data-toggle', 'collapse')
-      a.setAttribute('data-target', "#rs-#{id}")
+      a.setAttribute('data-target', "#rs-card-#{id}")
+      a.text = item
       td.appendChild(a)
-
-      h6 = document.createElement('h6')
-      h6.setAttribute('class',"rs-word")
-      if next_id != null
-        h6.innerText = item[0]
-      else
-        h6.innerText = item
-      $(h6).on 'click', ->
+      
+      $(a).on 'click', ->
         name = $(this).text()
         $(this).closest('.refine-search')
-          .find('.rs-title').text(name)    # 上に設定
-        $(this).closest('.refine-search')
-          .closest('.refine-search').find('.rs-input').val(name)
-        if next_id != null
-          $(this).closest('.refine-search')
-            .nextAll('.refine-search').find('.rs-title').text('')
-          $(this).closest('.refine-search')
-            .nextAll('.refine-search').find('table').remove()
-          $(this).closest('.refine-search')
-            .next('.refine-search').find('.card-body').append(get_table(next_id, items.find((x) -> x[0]==name)[1], null))
-      a.appendChild(h6)
+          .find('.rs-query').text(name).change()    # 上に設定
   return table
 
         

@@ -1,26 +1,14 @@
-<div class="card refine-search">
-  <a class="collapsed" data-toggle="collapse" data-target="#rs-<%= id%>">
+<div class="card refine-search" id="rs-<%= id%>" >
+  <a class="collapsed rs-collapse" data-toggle="collapse" data-target="#rs-card-<%= id%>">
     <div class="card-header" id="headingOne">
-      <h5> 
-      <%= title %> 
-      <input name="<%= title %>" class="rs-input" type="hidden" value="<%= default_word %>"></input><sapn class="rs-title"><%= default_word %></span>
+      <h5><%= title %> : 
+      <input name="<%= id %>" class="rs-input" type="hidden" value="<%= default_word %>"></input>
+      <sapn class="rs-query"><%= default_word %></span>
       </h5>
     </div>
   </a>
-  <div id="rs-<%= id%>" class="collapse">
+  <div id="rs-card-<%= id%>" class="collapse rs-card">
     <div class="card-body">
-      <% if items.length > 0 %>
-      <table class="table">
-        <tbody><% items.each_slice(4) do |row| %>
-          <tr>
-            <% row.each do |item| %>
-              <td><a data-toggle="collapse" data-target="#rs-<%= id%>"><h6 class="rs-word"><%= item %></h6></a></td>
-            <%end%>
-          </tr>
-        <%end%>
-        </tbody>
-      </table>
-      <% end %>
     </div>
   </div>
 </div>
