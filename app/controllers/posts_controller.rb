@@ -27,14 +27,20 @@ class PostsController < ApplicationController
         @problems.each do |problem|
         
             results = youtube.list_searches(
-                "id",                   #取得内容
+                "id, snippet",                   #取得内容
                 type: "video",          #チャンネルやプレイリストを含まず、動画のみ取得する
                 q: problem.name,        #検索キーワードの指定（検索方法は他にも色々あり）
                 max_results: 50        #最大取得件数
             ).items                     #動画リソースのみにフィルター
             
             results.each do |result|
-                Problem.find_by(name: problem.name).posts.create(video: result.id.video_id, approved: 'undecided')
+                matched_post = Post.find_by(video: result.id.video_id)
+                #既に動画を持っている場合、video_id以外の属性を更新する
+                if matched_post.present?
+                    matched_post.update(title: delete_emoji(result.snippet.title))
+                else
+                    Problem.find_by(name: problem.name).posts.create(video: result.id.video_id, title: delete_emoji(result.snippet.title), approved: 'undecided')
+                end
             end
         end
         
@@ -113,12 +119,21 @@ class PostsController < ApplicationController
             }                                           
         return match_or_not
     end
-    
+
     def get_hash(arr)
         if arr[0].length == 1
             arr.map{|a| a[0]}
         else
             arr.group_by{|a| a[0]}.map{|k,v| [k, get_hash(v.map{ |a| a[1..-1]})]}
         end
+    end
+    
+    def delete_emoji(text)      #mysqlが絵文字に対応していないため
+      # nilは絵文字が含まれていないことにしたい
+      return text if text.nil?
+      text.each_char do |b|
+        text.delete!(b) if b.bytesize == 4
+      end
+      return text
     end
 end

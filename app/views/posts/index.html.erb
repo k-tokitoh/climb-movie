@@ -53,6 +53,9 @@
           <span class='region_area'>
             <%= "#{post.problems.first.rock.area.name},#{post.problems.first.rock.area.region.name}" %>
           </span>
+          <% if session[:admin] == true %>
+            <br><span class='youtube_title'><%= "'#{post.title}'" %></span>
+          <% end %>
           <span class="caret"></span>
         </button>
       </div>
