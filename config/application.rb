@@ -23,3 +23,6 @@ module Climbmania
     # -- all .rb files in that directory are automatically loaded.
   end
 end
+
+#herokuでデプロイするには以下の設定が必要らしいので追加
+config.assets.initialize_on_precompile = false
