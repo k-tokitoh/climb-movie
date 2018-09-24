@@ -1,5 +1,7 @@
 <div class="card refine-search" id="rs-<%= id%>" >
+  <!--class:collapsed, data-toggle:collapseはbootstrap-->
   <a class="collapsed rs-collapse" data-toggle="collapse" data-target="#rs-card-<%= id%>">
+    <class=card-header,containerはbootstrap>
     <div class="card-header container" id="headingOne">
       <h5><%= title %> : 
       <input name="<%= id %>" class="rs-input" type="hidden" value="<%= default_word %>"></input>

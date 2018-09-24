@@ -18,10 +18,13 @@
     <% grade_upper = 16 %>
 <% end %>
 
-<%= text_field_tag :q, nil, placeholder: q, class: 'form-control col-md-6' %>
+<p class='free_word_search'>
+    <%= text_field_tag :q, nil, placeholder: q, class: 'free_word_search_form' %>
+    <%= button_tag sanitize('<i class="fas fa-search"></i>'), type: "submit", class: 'free_word_search_button' %>
+</p>
 <!--select(オブジェクト名, プロパティ名, タグの情報 [, オプション])-->
-<%= select(:grade, :lower, @grade_correspondence, selected: grade_lower, class: 'form-control') %>
-～<%= select(:grade, :upper, @grade_correspondence, selected: grade_upper, class: 'form-control') %>
+<%= select(:grade, :lower, @grade_correspondence, selected: grade_lower) %>
+～<%= select(:grade, :upper, @grade_correspondence, selected: grade_upper) %>
 <div class="card col-md-6">
   <a class="collapsed" data-toggle="collapse" data-target="#rs-box">
     <div class="card-header" id="headingOne">絞り込み条件</div>
@@ -36,4 +39,3 @@
     <%= render partial: 'refine_search_card', locals: { id: 'problem', title: '課題', dispaly: 'none', default_word: params.fetch('problem', '')} %>
   </div>
  </div>
-<%= submit_tag("Search", class: "btn btn-primary") %>
