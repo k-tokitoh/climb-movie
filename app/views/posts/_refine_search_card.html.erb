@@ -1,12 +1,12 @@
-<div class="card refine-search" id="rs-<%= id%>" >
+<div class="card refine-search" id="rs-<%= id%>">
   <!--class:collapsed, data-toggle:collapseはbootstrap-->
   <a class="collapsed rs-collapse" data-toggle="collapse" data-target="#rs-card-<%= id%>">
-    <class=card-header,containerはbootstrap>
-    <div class="card-header container" id="headingOne">
-      <h5><%= title %> : 
+    <!-- class=card-headerはbootstrap -->
+    <div class="card-header" id="headingOne">
+      <p><%= title %> : 
       <input name="<%= id %>" class="rs-input" type="hidden" value="<%= default_word %>"></input>
       <sapn class="rs-query"><%= default_word %></span>
-      </h5>
+      </p>
     </div>
   </a>
   <div id="rs-card-<%= id%>" class="collapse rs-card">

@@ -23,15 +23,17 @@
       <%= check_box_tag('approval[OK]', true, ok) %>
       <%= label_tag('approval[OK]', "OK") %>
       <%= check_box_tag('approval[NG]', true, ng) %>
-      <%= label_tag('approval[NG]', "NG") %><br>
+      <%= label_tag('approval[NG]', "NG") %><br> 
       <%= render 'search' %>
     <% end %>
     
-  <% else %>
+    <% else %>
     <%= form_tag("/search", method: "get") do %>  
       <%= render 'search' %>
     <% end %>
   <% end %>
+  <%= render 'refine_search' %>
+  
 </div>
 
 <div class='posts'>
