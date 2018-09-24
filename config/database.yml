@@ -52,6 +52,6 @@ production:
   adapter: postgresql
   encoding: utf8
   pool: 5
-  database: climb-movie_production
-  username: climb-movie
+  database: climbmania_production
+  username: climbmania
   password: <%= ENV[' CLIMBMANIA_DATABASE_PASSWORD'] %>
