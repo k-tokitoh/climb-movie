@@ -35,6 +35,8 @@ gem 'google-api-client', '~> 0.11'
 gem 'kaminari'                            #ページネーション
 gem 'hirb'                                #コンソール画面でのDBレコード表示を整える
 gem 'dotenv-rails'                        #環境変数の設定
+gem 'gon'                                 #jsとの連携
+gem 'jquery-turbolinks'                   #turbolinks(ページネーション時など)の時jsを再ロード(rails5ではいらないらしいが)
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development

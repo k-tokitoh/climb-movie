@@ -7,6 +7,7 @@ class PostsController < ApplicationController
             @posts = Post.where(approved: 'OK').page(params[:page]).per(12)     #公開が許可されたポストのみをフィードする
         end
         @posts_num = Post.where(approved: 'OK').length
+        gon.names = get_words_for_refine_search()
     end
     
     def update                                  #承認状況等の更新
@@ -69,8 +70,15 @@ class PostsController < ApplicationController
                     .where(posts: {approved: approval_condition})   # approval_conditonにマッチするpostのみ取り出す
                     .where(problems: {grade: params[:grade][:lower].to_i..params[:grade][:upper].to_i})
                     .select(selection_string)                       # 検索に用いるカラムを取り出す
-
-
+        if params[:region] != ''
+            db = db.select{|record| record.region == params[:region]}
+        end
+        if params[:area] != ''
+            db = db.select{|record| record.area == params[:area]}
+        end
+        if params[:problem] != ''
+            db = db.select{|record| record.problem == params[:problem]}
+        end
                     
         q = params[:q].gsub(/\p{blank}/,' ').split()    #検索クエリの全角スペースを半角スペースに置換してsplit
 
@@ -82,7 +90,16 @@ class PostsController < ApplicationController
 
         @posts = Post.where(id: matched_ids).page(params[:page]).per(12)    # 選択されたidのみ表示する
         @posts_num = Post.where(approved: 'OK').length
+        gon.names = get_words_for_refine_search()
         render 'index'
+    end
+    
+    def set_refine_search
+        if params[:id] == 'region'
+            render partial: 'refine_search_card', locals: { id: 'area', items: Area.all.pluck('name') , title: 'エリア'}
+        else
+            render plain: '1'
+        end
     end
     
     private
@@ -100,6 +117,14 @@ class PostsController < ApplicationController
                 }                               # 1回でも登場したらtrueを返す
             }                                           
         return match_or_not
+    end
+
+    def get_words_for_refine_search()
+        names = {}
+        names['region'] = Region.all.pluck('name')
+        names['area'] = Region.joins(:areas).pluck('regions.name', 'areas.name')
+        names['problem'] = Area.joins(rocks: :problems).pluck('areas.name', 'problems.name')
+        names
     end
     
     def delete_emoji(text)      #mysqlが絵文字に対応していないため

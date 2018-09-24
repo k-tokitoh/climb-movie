@@ -13,6 +13,8 @@ Rails.application.routes.draw do
   get 'search', to: 'posts#search'                      # 検索
   
   get '/area/:id', to: 'areas#show'
+  
+  post '/set_refine_search', to: 'posts#set_refine_search'
 
 
 end
