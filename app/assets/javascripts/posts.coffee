@@ -18,7 +18,7 @@ $(document).on 'turbolinks:load', ->                        # 画面が表示さ
     $(this).closest('.refine-search').next('.refine-search').find('.rs-query').text('').change()    # さらにそれ以下のクエリを消して
   
   $('.rs-card')                                         # <div id="rs-card-<%= id%>" class="collapse rs-card">
-    .on 'show.bs.collapse', (e)->                       # 一覧が表示された時
+    .on 'show.bs.collapse', (e)->                       # 一覧が表示された時, bs=bootstrap, e=event
       id = $(this).prop('id').split('-')[-1..][0]       # idとは、region, area, problemなど
       if id == 'region'                                 # regionタグの時
         to_show = gon.names[id]                         # そのままとってこれる
