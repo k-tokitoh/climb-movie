@@ -1,4 +1,4 @@
-<p><%= @posts_num %>件のクライミング動画から検索</p>
+<!--<p><%= @posts_num %>件のクライミング動画を公開中</p>-->
 <% @grade_correspondence = [['10級', 1], ['9級', 2],['8級', 3], ['7級', 4],['6級', 5], ['5級', 6],['4級', 7], ['3級', 8],['2級', 9], ['1級', 10],['初段', 11], ['二段', 12],['三段', 13], ['四段', 14],['五段', 15], ['六段', 16]] %>
 
 <div class='search-form'>
@@ -7,7 +7,7 @@
     <%= link_to 'Logout', logout_path, method: :delete %><br>
     <%= link_to 'Youtube動画を取得する', youtubeAPI_path, method: :get %>
     
-    <%= form_tag("/search", method: "get", class: "form-group") do %>
+    <%= form_tag("/search", method: "get") do %>
       <!--paramsが承認状況の条件をもっていなければ、全ての承認状況を表示対象にする-->
       <% if params.has_key?(:approval) %>
         <% undecided = params[:approval][:undecided] %>
@@ -23,59 +23,56 @@
       <%= check_box_tag('approval[OK]', true, ok) %>
       <%= label_tag('approval[OK]', "OK") %>
       <%= check_box_tag('approval[NG]', true, ng) %>
-      <%= label_tag('approval[NG]', "NG") %>
+      <%= label_tag('approval[NG]', "NG") %><br>
       <%= render 'search' %>
     <% end %>
     
   <% else %>
-    <%= form_tag("/search", method: "get", class: "form-group") do %>  
+    <%= form_tag("/search", method: "get") do %>  
       <%= render 'search' %>
     <% end %>
   <% end %>
+</div>
 
-  <div class='posts'>
+<div class='posts'>
   <% if @posts.length == 0 %>
     検索条件に合う動画がありません
   <% end %>
   <% @posts.each_with_index do |post, i| %>
-    <div class='post'>
-      <!--<div class="collapse show" id="collapse-target<%= i %>">-->
-        <div class="thumbnail">
-          <a href="https://www.youtube.com/embed/<%= post.video.html_safe %>?" data-lity="data-lity">
-            <%= image_tag("http://img.youtube.com/vi/#{post.video.html_safe}/mqdefault.jpg", { :border => '0', :alt => 'title'}) %>
-          </a>
-        </div>
-      <!--</div>-->
-      <div>
-        <!--<button class="btn btn-primary" data-toggle="collapse" data-target="#collapse-target<%= i %>" role="button" aria-expanded="false">-->
-          <b><%= post.problems.map{ |problem| 
-            "#{problem.name}#{@grade_correspondence.to_h.invert[problem.grade]}"}.join %></b><br>
-          <span class='region_area'>
-            <%= "#{post.problems.first.rock.area.name},#{post.problems.first.rock.area.region.name}" %>
-          </span>
-          <% if session[:admin] == true %>
-            <br><span class='youtube_title'><%= "'#{post.title}'" %></span>
-          <% end %>
-          <span class="caret"></span>
-        </button>
+  <div class='post'>
+    <!--<div class="collapse show" id="collapse-target<%= i %>">-->
+      <div class="thumbnail">
+        <a href="https://www.youtube.com/embed/<%= post.video.html_safe %>?" data-lity="data-lity">
+          <%= image_tag("http://img.youtube.com/vi/#{post.video.html_safe}/mqdefault.jpg", { :border => '0', :alt => 'title'}) %>
+        </a>
       </div>
-  　　<% if session[:admin] == true %>
-  　　<div class="request_ajax_update">
-        承認状況 : <span class="upproval_state" >
-        <%= post.approved %>
+    <!--</div>-->
+    <div>
+      <!--<button class="btn btn-primary" data-toggle="collapse" data-target="#collapse-target<%= i %>" role="button" aria-expanded="false">-->
+        <b><%= post.problems.map{ |problem| 
+          "#{problem.name}#{@grade_correspondence.to_h.invert[problem.grade]}"}.join %></b><br>
+        <span class='region_area'>
+          <%= "#{post.problems.first.rock.area.name},#{post.problems.first.rock.area.region.name}" %>
         </span>
+        <% if session[:admin] == true %>
+          <br><span class='youtube_title'><%= "'#{post.title}'" %></span>
+        <% end %>
+      <!--</button>-->
+    </div>
+　　<% if session[:admin] == true %>
+　　  <div class="request_ajax_update">
+        承認状況 : <span class="upproval_state" ><%= post.approved %></span>
         <%= form_for(post, remote: true, authenticity_token: true) do |f| %>
-        <!-- ↑ authenticity_token: true を書かないと行けない。なぜか。 !-->
+          <!-- ↑ authenticity_token: true を書かないと行けない。なぜか。 !-->
           <label class='radio_label'><%= f.radio_button :approved, 'OK' %>OK</label>
           <label class='radio_label'><%= f.radio_button :approved, 'NG' %>NG</label>
           <%= f.submit '更新' %>
         <% end %>
-        </div>
-      <% end %>
-    </div>
+      </div>
+    <% end %>
+  </div>
 
   <% end %>
-</div>
 </div>
 <div class="paginator">
   <%= paginate @posts %>
