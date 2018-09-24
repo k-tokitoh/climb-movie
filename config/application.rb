@@ -24,4 +24,8 @@ module Climbmania
   end
 end
 
-config.assets.initialize_on_precompile = false
+
+
+Rails.application.configure do
+  config.assets.initialize_on_precompile = false
+end
