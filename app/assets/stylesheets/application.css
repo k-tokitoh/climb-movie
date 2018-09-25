@@ -35,6 +35,8 @@ header img {
   display:inline-block;
   border-radius: 6px;
   outline:none;
+  border-style: ridge;
+  /*border-color:gray;*/
 }
 
 .free_word_search_button{
@@ -44,6 +46,7 @@ header img {
   background-color: #499475;
   color: white;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  border-style: none;
 }
 
 #grade_lower, #grade_upper{
@@ -81,6 +84,10 @@ footer{
     margin:30px auto 10px;
   }
 
-.free_word_search_form, .free_word_search_button{
+.free_word_search_form{
+  height:36px;
+}
+
+.free_word_search_button{
   height:36px;
 }

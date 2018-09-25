@@ -47,8 +47,11 @@ test:
 #   production:
 #     url: <%= ENV['DATABASE_URL'] %>
 #
+
 production:
-  <<: *default
+  adapter: postgresql
+  encoding: utf8
+  pool: 5
   database: climbmania_production
   username: climbmania
-  password: <%= ENV['CLIMBMANIA_DATABASE_PASSWORD'] %>
+  password: <%= ENV[' CLIMBMANIA_DATABASE_PASSWORD'] %>

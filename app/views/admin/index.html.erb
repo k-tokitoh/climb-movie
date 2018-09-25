@@ -1,0 +1,33 @@
+<% if session[:admin] == true %>
+    <% @regions.each do |region| %>
+        <div class='region'><%= region.name %>
+            <% region.areas.each do |area| %>
+                <div class='area'>
+                    <%= area.name %>
+                    <% area.rocks.each do |rock| %>
+                        <div class='rock'>
+                            <%= rock.name %>
+                            <% rock.problems.each do |problem| %>
+                                <div class='problem'>
+                                    <%= problem.name %>
+                                    <%= problem.grade.to_s %>
+                                </div>
+                            <% end %>
+                        </div>
+                    <% end %>
+                </div>
+            <% end %>
+        </div>
+    <% end %>
+
+
+
+<% end %>
+
+<div class="container">
+    <label for="btn">ボタン</label>
+    <input id="btn" type="checkbox">
+    <div class="btm">
+        サンプルテキスト
+    </div>
+</div>
