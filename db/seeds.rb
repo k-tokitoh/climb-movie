@@ -26,7 +26,7 @@ CSV.foreach('db/climbmania_db.csv', headers: true, encoding: "Shift_JIS:UTF-8") 
 
     rock = Rock.find_by(name: record['rock'])
     if rock.present?
-        rock.problems.create(name: record['problem'], grade: record['grade'])       #problemレコードを作成
+        rock.problems.create(name: record['problem'], grade: record['grade'].to_i)       #problemレコードを作成
     end
 end
 
