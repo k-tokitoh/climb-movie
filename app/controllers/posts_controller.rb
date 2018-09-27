@@ -74,7 +74,7 @@ class PostsController < ApplicationController
         if params.has_key?(:q)                              #フリーワード検索の時
             q = params[:q].gsub(/\p{blank}/,' ').split()    #検索クエリの全角スペースを半角スペースに置換してsplit
             #各レコードについて、複数の検索条件全てに合致するかをしらべて
-            db.select{ |record| freeword_search(record, q)          # qは検索クエリワードの配列
+            matched_ids = db.select{ |record| freeword_search(record, q)          # qは検索クエリワードの配列
             #すべての検索条件に合致する場合のみpost_idを記録する
             }.map{ |record| record.post_id}
         elsif [:region, :area, :problem, :grade].all?{ |condition| params.has_key?(condition)}   # 詳細検索の時
@@ -85,9 +85,10 @@ class PostsController < ApplicationController
             }.select{ |record|
                     params[:grade][:lower].to_i <= record.grade  && record.grade <= params[:grade][:upper].to_i
             }
+            matched_ids = db.map{ |record| record.post_id}
         end
+
         
-        matched_ids = db.map{ |record| record.post_id}
 
         @posts = Post.where(id: matched_ids).page(params[:page]).per(12)    # 選択されたidのみ表示する
         @posts_num = Post.where(approved: 'OK').length

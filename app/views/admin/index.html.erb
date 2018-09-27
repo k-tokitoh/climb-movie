@@ -1,33 +1,64 @@
 <% if session[:admin] == true %>
-    <% @regions.each do |region| %>
-        <div class='region'><%= region.name %>
-            <% region.areas.each do |area| %>
-                <div class='area'>
-                    <%= area.name %>
-                    <% area.rocks.each do |rock| %>
-                        <div class='rock'>
-                            <%= rock.name %>
-                            <% rock.problems.each do |problem| %>
-                                <div class='problem'>
-                                    <%= problem.name %>
-                                    <%= problem.grade.to_s %>
-                                </div>
-                            <% end %>
-                        </div>
-                    <% end %>
-                </div>
+    <table>
+        <!--<div class='region'>-->
+            <!--新規region作成フォーム-->
+            <tr>
+            <%= form_for(Region.new, data: { remote: true }) do |f| %>
+                <td></td>
+                <td><%= f.text_field :name %></td>
+                <td><%= f.submit class: 'mybtn create_btn' %></td>
             <% end %>
-        </div>
-    <% end %>
-
-
-
+            </tr>
+        <!--</div>-->
+        <% @regions.each do |region| %>
+            <!--<div class='region'>-->
+                <tr>
+                <%= form_for(region) do |f| %>
+                    <td><%= region.name %></td>
+                    <td><%= f.text_field :name %></td>
+                    <td><%= f.submit data: {confirm: "ARE YOU SURE?"}, class: 'mybtn' %></td>
+                <% end %>
+                <td><%= link_to 'DELETE', region, method: :delete, data: {confirm: "ARE YOU SURE?"} %></td>
+                </tr>
+                <!--<div class='area'>-->
+                <!--新規area作成フォーム-->
+                <tr><td></td><td></td>
+                    <%= form_for(Area.new) do |f| %>
+                        <td></td>
+                        <td><%= f.text_field :name %></td>
+                        <!--f.hidden_fieldによりparamsにregion.idを含める-->
+                        <%= f.hidden_field :region_id, value: region.id %>
+                        <td><%= f.submit(region: 1, class: 'create_btn mybtn')%></td>
+                    <% end %>
+                </tr>
+            <!--</div>-->
+                <% region.areas.each do |area| %>
+                    <!--<div class='area'>-->
+                        <tr><td></td><td></td>
+                            <%= form_for(area) do |f| %>
+                                <td><%= area.name %></td>
+                                <td><%= f.text_field :name %></td>
+                                <td><%= f.submit data: {confirm: "ARE YOU SURE?"}, class: 'mybtn' %></td>
+                            <% end %>
+                            <td><%= link_to 'DELETE', area, method: :delete, data: {confirm: "ARE YOU SURE?"} %></td>
+                        </tr>
+                        
+                        
+                        <% area.rocks.each do |rock| %>
+                            <!--<div class='rock'>-->
+                                <%= rock.name %>
+                                <% rock.problems.each do |problem| %>
+                                    <!--<div class='problem'>-->
+                                        <%= problem.name %>
+                                        <%= problem.grade.to_s %>
+                                    <!--</div>-->
+                                <% end %>
+                            <!--</div>-->
+                        <% end %>
+                    <!--</div>-->
+                <% end %>
+            <!--</div>-->
+        <% end %>
+    </table>
 <% end %>
 
-<div class="container">
-    <label for="btn">ボタン</label>
-    <input id="btn" type="checkbox">
-    <div class="btm">
-        サンプルテキスト
-    </div>
-</div>

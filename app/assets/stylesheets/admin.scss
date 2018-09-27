@@ -2,20 +2,49 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
+form{
+  display:inline;
+}
+
+table{
+    margin-left:60px;
+}
+
+tr{
+  height:40px;
+}
+
+td{
+  width:120px;
+}
+
+.mybtn{
+  width:120px;
+}
+
+.create_btn{
+  background-color:pink;
+  
+}
+
 .region{
     margin-left:20px;
+    margin-top:10px;
+    margin-bottom:10px;
 }
 
 .area{
-    margin-left:30px;
+    margin-left:60px;
+    margin-top:10px;
+    margin-bottom:10px;
 }
 
 .rock{
-    margin-left:30px;
+    margin-left:60px;
 }
 
 .problem{
-    margin-left:30px;
+    margin-left:60px;
 }
 
 

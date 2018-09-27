@@ -4,6 +4,16 @@ Rails.application.routes.draw do
   get '/', to: 'posts#index'
 
   resources :posts
+  
+  get 'admin', to: 'admin#index'
+  
+  post '/regions', to: 'admin#create_region', as: 'regions'
+  patch '/regions/:id', to: 'admin#edit_region', as: 'region'
+  delete '/regions/:id', to: 'admin#destroy_region'
+  
+  post '/areas', to: 'admin#create_area', as: 'areas'
+  patch '/areas/:id', to: 'admin#edit_area', as: 'area'
+  delete '/areas/:id', to: 'admin#destroy_area'
 
   get 'login', to: 'sessions#new'
   post 'login', to: 'sessions#create'
@@ -11,10 +21,6 @@ Rails.application.routes.draw do
 
   get 'youtubeAPI', to: 'posts#get_youtube_videos'
   get 'search', to: 'posts#search'                      # 検索
-  
-  get 'admin', to: 'admin#index'
-
-  get '/area/:id', to: 'areas#show'
   
   post '/set_refine_search', to: 'posts#set_refine_search'
 

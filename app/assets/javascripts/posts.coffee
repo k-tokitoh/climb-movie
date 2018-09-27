@@ -66,6 +66,7 @@ get_table = (id, items) ->
           .find('.rs-query').text(name).change()    # 上に設定
   return table
 
-        
+
+
 
         
