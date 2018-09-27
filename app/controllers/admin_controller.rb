@@ -6,7 +6,7 @@ class AdminController < ApplicationController
    
     def create_region
         @region = Region.create(name: params[:region][:name])
-        # redirect_to '/admin'
+        redirect_to '/admin'
     end
    
     def edit_region
@@ -17,6 +17,11 @@ class AdminController < ApplicationController
     def destroy_region
         Region.find(params[:id]).destroy
         redirect_to '/admin' 
+    end
+    
+    def show_areas
+        @region = Region.find(params[:id])
+        render 'areas'
     end
     
     def create_area
@@ -33,6 +38,11 @@ class AdminController < ApplicationController
     def destroy_area
         Area.find(params[:id]).destroy
         redirect_to '/admin' 
+    end
+    
+    def show_rocks
+        @area = Area.find(params[:id])
+        render 'rocks'
     end
     
 end

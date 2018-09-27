@@ -1,0 +1,25 @@
+<h1><%= @region.name%>の岩場一覧</h1>
+
+
+<table>
+    <!--新規area作成フォーム-->
+        <%= form_for(Area.new) do |f| %>
+            <td>(new area)</td>
+            <td><%= f.text_field :name %></td>
+            <!--f.hidden_fieldによりparamsにregion.idを含める-->
+            <%= f.hidden_field :region_id, value: @region.id %>
+            <td><%= f.submit(class: 'create_btn mybtn')%></td>
+        <% end %>
+    </tr>
+
+    <% @region.areas.each do |area| %>
+            <tr>
+                <%= form_for(area) do |f| %>
+                    <td><%= link_to area.name, area_path(area) %></td>
+                    <td><%= f.text_field :name %></td>
+                    <td><%= f.submit data: {confirm: "ARE YOU SURE?"}, class: 'mybtn' %></td>
+                <% end %>
+                <td><%= link_to 'DELETE', area, method: :delete, data: {confirm: "ARE YOU SURE?"} %></td>
+            </tr>
+    <% end %>
+</table>

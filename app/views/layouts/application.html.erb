@@ -17,6 +17,17 @@
   
     <!--fontawesomeの読み込み-->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-123812656-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'UA-123812656-1');
+    </script>
+
   </head>
 
 
@@ -25,7 +36,7 @@
   </header>
 
   <body>
-    <!--<%= "デバッグ用表示 params:#{params}"  %><br>-->
+    <%= "デバッグ用表示 params:#{params}"  %><br>
     <% flash.each do |message_type, message| %>
       <%= message %><br>
     <% end %>
