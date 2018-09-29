@@ -1,32 +1,34 @@
-<h1><%= "area list of #{@region.name}" %></h1>
-<p></p><%= link_to 'BACK', '/admin' %></p>
-
-<span class='name'></span>
-<span class='rocks'>rocks</span>
-<span class='problems'>problems</span>
-<span class='posts_OK'>posts_OK</span>
-
-<% problems = @region.areas.joins(rocks: :problems).select('area_id').group(:area_id).size %>
-<% posts_OK = @region.areas.joins(rocks: {problems: :posts}).select('area_id, approved').where('posts.approved' => 'OK').group(:area_id).size %>
-
-
-    <%= form_for(Area.new) do |f| %>
-        <span class='name'>(new area)</span>
-        <span class='rocks'></span>
-        <span class='problems'></span>
-        <span class='posts_OK'></span>
-        <%= f.text_field :name, class: 'text_field' %>
-        <%= f.hidden_field :region_id, value: @region.id %>
-        <%= f.submit class: 'submit' %>
-    <% end %>
-    <% @region.areas.each do |area| %>
-        <%= form_for area do |f| %>
-            <span class='name'><%= link_to area.name, controller: "rocks", action: "index", area_id: area.id %></span>
-            <span class='rocks'><%= area.rocks.size %></span>
-            <span class='problems'><%= problems.fetch(area.id, 0) %></span>
-            <span class='posts_OK'><%= posts_OK.fetch(area.id, 0) %></span>
+<% if session[:admin] == true %>
+    <h1><%= "area list of #{@region.name}" %></h1>
+    <p></p><%= link_to 'BACK', '/admin' %></p>
+    
+    <span class='name'></span>
+    <span class='rocks'>rocks</span>
+    <span class='problems'>problems</span>
+    <span class='posts_OK'>posts_OK</span>
+    
+    <% problems = @region.areas.joins(rocks: :problems).select('area_id').group(:area_id).size %>
+    <% posts_OK = @region.areas.joins(rocks: {problems: :posts}).select('area_id, approved').where('posts.approved' => 'OK').group(:area_id).size %>
+    
+    
+        <%= form_for(Area.new) do |f| %>
+            <span class='name'>(new area)</span>
+            <span class='rocks'></span>
+            <span class='problems'></span>
+            <span class='posts_OK'></span>
             <%= f.text_field :name, class: 'text_field' %>
+            <%= f.hidden_field :region_id, value: @region.id %>
             <%= f.submit class: 'submit' %>
-            <%= link_to 'delete', area, method: :delete, data: {confirm: "ARE YOU SURE?"} %>
         <% end %>
-    <% end %>
+        <% @region.areas.each do |area| %>
+            <%= form_for area do |f| %>
+                <span class='name'><%= link_to area.name, controller: "rocks", action: "index", area_id: area.id %></span>
+                <span class='rocks'><%= area.rocks.size %></span>
+                <span class='problems'><%= problems.fetch(area.id, 0) %></span>
+                <span class='posts_OK'><%= posts_OK.fetch(area.id, 0) %></span>
+                <%= f.text_field :name, class: 'text_field' %>
+                <%= f.submit class: 'submit' %>
+                <%= #link_to 'delete', area, method: :delete, data: {confirm: "ARE YOU SURE?"} %>
+            <% end %>
+        <% end %>
+<% end %>

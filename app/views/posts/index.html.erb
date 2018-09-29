@@ -17,15 +17,16 @@
         <% undecided, ok, ng, suspended = true, false, false, false %>
       <% end %>
       <!-- オブジェクト名、プロパティ名（チェックが入っていた場合にparams[オブジェクト名]に格納される値）、初期値 -->
+      <% app_num = Post.group(:approved).size %>
       <%= check_box_tag( 'approval[undecided]', true, undecided) %>
       <!-- オブジェクト名（checkboxtagと対応させる）、ラベルとして表示される文字列 -->
-      <%= label_tag('approval[undecided]', "undecided") %>
+      <%= label_tag('approval[undecided]', "undecided(#{app_num.fetch("undecided",0)})") %>
       <%= check_box_tag('approval[OK]', true, ok) %>
-      <%= label_tag('approval[OK]', "OK") %>
+      <%= label_tag('approval[OK]', "OK(#{app_num.fetch("OK",0)})") %>
       <%= check_box_tag('approval[NG]', true, ng) %>
-      <%= label_tag('approval[NG]', "NG") %>
+      <%= label_tag('approval[NG]', "NG(#{app_num.fetch("NG",0)})") %>
       <%= check_box_tag('approval[suspended]', true, suspended) %>
-      <%= label_tag('approval[suspended]', "suspended") %><br>
+      <%= label_tag('approval[suspended]', "suspended(#{app_num.fetch("suspended",0)})") %><br>
       <%= render 'search' %>
     <% end %>
     

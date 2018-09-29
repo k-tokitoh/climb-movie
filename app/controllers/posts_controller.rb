@@ -2,11 +2,10 @@ class PostsController < ApplicationController
     
     def index
         if session[:admin]                                                      #管理ユーザの場合、
-            @posts = Post.all.page(params[:page]).per(12)                       #全てのポストをフィードして、
+            @posts = Post.where(approved: 'undecided').page(params[:page]).per(12)                       #undecidedのみをフィードして、
         else                                                                    #一般ユーザの場合、
             @posts = Post.where(approved: 'OK').page(params[:page]).per(12)     #公開が許可されたポストのみをフィードする
         end
-        @posts_num = Post.where(approved: 'OK').length
         gon.names = get_words_for_refine_search()
     end
     
@@ -33,12 +32,27 @@ class PostsController < ApplicationController
             ).items                     #動画リソースのみにフィルター
             
             results.each do |result|
+                trimmed_title = trim(result.snippet.title)
                 matched_post = Post.find_by(video: result.id.video_id)
                 #既に動画を持っている場合、video_id以外の属性を更新する
                 if matched_post.present?
-                    matched_post.update(title: delete_emoji(result.snippet.title))
+                    matched_post.update(title: trimmed_title)
                 else
-                    Problem.find_by(name: problem.name).posts.create(video: result.id.video_id, title: delete_emoji(result.snippet.title), approved: 'undecided')
+                    matched_post = Problem.find_by(name: problem.name).posts.create(video: result.id.video_id, title: trimmed_title, approved: 'undecided')
+                end
+                
+                # youtubeでのタイトルがエリア名、課題名、グレードを全て含む場合、そのpostの公開を許可する。
+                # グレードは表記ゆれに対応し、いずれかを含めばよい。（定数はenvironment.rbで定義）
+                perfect_match = true
+                matched_post.problems.each do |problem|
+                    if [problem.rock.area.name, problem.name, ].all?{|i|trimmed_title.include?(i)} == false \
+                        || [GRADE_CORRESPONDENCE.to_h.invert[problem.grade], GRADE_QDver[problem.grade], GRADE_chara[problem.grade]].any?{|i|trimmed_title.include?(i)} == false
+                        perfect_match = false
+                    end
+                end
+
+                if perfect_match == true
+                    matched_post.update(approved: 'OK')
                 end
             end
         end
@@ -121,12 +135,15 @@ class PostsController < ApplicationController
         names
     end
     
-    def delete_emoji(text)      #mysqlが絵文字に対応していないため
-      # nilは絵文字が含まれていないことにしたい
+    def trim(text)      #mysqlが絵文字に対応していないため
       return text if text.nil?
       text.each_char do |b|
         text.delete!(b) if b.bytesize == 4
       end
+      # 全角数字を半角にする
+      text.tr!("０-９", "0-9")
+      # 半角及び全角のスペースを取り除く
+      text.gsub!(/(\s|　)+/, '')
       return text
     end
 end

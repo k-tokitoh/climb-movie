@@ -1,27 +1,29 @@
-<h1><%= "problem list of #{@rock.name}, #{@rock.area.name}, #{@rock.area.region.name}" %></h1>
-<p><%= link_to 'BACK', controller: "rocks", action: "index", area_id: @rock.area.id %></p>
-
-<span class='name'></span>
-<span class='grade'></span>
-<span class='posts_OK'>posts_OK</span>
-
-<%= form_for(Problem.new) do |f| %>
-    <span class='name'>(new problem)</span>
+<% if session[:admin] == true %>
+    <h1><%= "problem list of #{@rock.name}, #{@rock.area.name}, #{@rock.area.region.name}" %></h1>
+    <p><%= link_to 'BACK', controller: "rocks", action: "index", area_id: @rock.area.id %></p>
+    
+    <span class='name'></span>
     <span class='grade'></span>
-    <span class='posts_OK'></span>
-    <%= f.text_field :name, class: 'text_field' %>
-    <%= f.select :grade, GRADE_CORRESPONDENCE %>
-    <%= f.hidden_field :rock_id, value: @rock.id %>
-    <%= f.submit class: 'submit' %>
-<% end %>
-<% @rock.problems.each do |problem| %>
-    <%= form_for problem do |f| %>
-        <span class='name'><%= problem.name %></span>
-        <span class='grade'><%= GRADE_CORRESPONDENCE.to_h.invert[problem.grade] %></span>
-        <span class='posts_OK'><%= problem.posts.where(approved: 'OK').size %></span>
+    <span class='posts_OK'>posts_OK</span>
+    
+    <%= form_for(Problem.new) do |f| %>
+        <span class='name'>(new problem)</span>
+        <span class='grade'></span>
+        <span class='posts_OK'></span>
         <%= f.text_field :name, class: 'text_field' %>
         <%= f.select :grade, GRADE_CORRESPONDENCE %>
+        <%= f.hidden_field :rock_id, value: @rock.id %>
         <%= f.submit class: 'submit' %>
-        <%= link_to 'delete', problem, method: :delete, data: {confirm: "ARE YOU SURE?"} %>
+    <% end %>
+    <% @rock.problems.each do |problem| %>
+        <%= form_for problem do |f| %>
+            <span class='name'><%= problem.name %></span>
+            <span class='grade'><%= GRADE_CORRESPONDENCE.to_h.invert[problem.grade] %></span>
+            <span class='posts_OK'><%= problem.posts.where(approved: 'OK').size %></span>
+            <%= f.text_field :name, class: 'text_field' %>
+            <%= f.select :grade, GRADE_CORRESPONDENCE %>
+            <%= f.submit class: 'submit' %>
+            <%= link_to 'delete', problem, method: :delete, data: {confirm: "ARE YOU SURE?"} %>
+        <% end %>
     <% end %>
 <% end %>
