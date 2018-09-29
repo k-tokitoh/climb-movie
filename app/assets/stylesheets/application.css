@@ -86,10 +86,11 @@ footer{
     margin:30px auto 10px;
   }
 
-.free_word_search_form{
-  height:36px;
-}
-
-.free_word_search_button{
-  height:36px;
+  .free_word_search_form{
+    height:36px;
+  }
+  
+  .free_word_search_button{
+    height:36px;
+  }
 }
