@@ -1,0 +1,15 @@
+<h1>region list</h1>
+
+    <%= form_for(Region.new) do |f| %>
+        <span class='name'>(new region)</span>
+        <%= f.text_field :name, class: 'text_field' %>
+        <%= f.submit class: 'submit' %>
+    <% end %>
+    <% @regions.each do |region| %>
+        <%= form_for region do |f| %>
+            <span class='name'><%= link_to region.name, controller: "areas", action: "index", region_id: region.id %></span>
+            <%= f.text_field :name, class: 'text_field' %>
+            <%= f.submit class: 'submit' %>
+            <%= link_to 'delete', region, method: :delete, data: {confirm: "ARE YOU SURE?"} %>
+        <% end %>
+    <% end %>

@@ -1,3 +1,26 @@
 // Place all the styles related to the areas controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+.name, .text_field{
+    display: inline-block;
+    width: 180px;    
+}
+
+.rocks{
+    display: inline-block;
+    width: 60px;
+    text-align: center;
+}
+
+.problems{
+    display: inline-block;
+    width: 60px;
+    text-align: center;
+}
+
+.posts_OK{
+    display: inline-block;
+    width: 80px;
+    text-align: center;
+}

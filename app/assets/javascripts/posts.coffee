@@ -65,6 +65,8 @@ get_table = (id, items) ->
         $(this).closest('.refine-search')
           .find('.rs-query').text(name).change()    # 上に設定
   return table
+  
+  $('#result').html("更新後");
 
 
 

@@ -36,7 +36,9 @@
   </header>
 
   <body>
-    <%= "デバッグ用表示 params:#{params}"  %><br>
+    <% if Rails.env == "development" %>
+      <%= "デバッグ用表示 params:#{params}"  %>
+    <% end %>
     <% flash.each do |message_type, message| %>
       <%= message %><br>
     <% end %>
