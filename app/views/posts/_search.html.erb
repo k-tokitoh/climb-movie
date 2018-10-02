@@ -5,3 +5,23 @@
     <%= text_field_tag :q, nil, placeholder: q, class: 'free_word_search_form' %>
     <%= button_tag sanitize('<i class="fas fa-search"></i>'), type: "submit", class: 'free_word_search_button' %>
 </p>
+
+<div id='refine_search'>
+    <div id='refine_search_title'>
+        絞り込み検索
+    </div>
+    <div id='refine_search_body'>
+        <p id='current_condition'>
+            <span id='current_region'></span>
+            <span id='current_area'></span>
+            <span id='current_problem'></span>
+        </p>
+        <div id='region_choices'>
+            <% Region.all.each do |region| %>
+                <p><%= link_to region.name, suggest_areas_path(region_id: region.id), {remote: true, id: 'region_choice'} %></p>
+            <% end %>
+        </div>
+        <p id='area_choices'></p>
+        <p id='problem_choices'></p>
+    </div>
+</div>

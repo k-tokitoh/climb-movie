@@ -3,8 +3,10 @@ class PostsController < ApplicationController
     def index
         if session[:admin]                                                      #管理ユーザの場合、
             @posts = Post.where(approved: 'undecided').page(params[:page]).per(12)                       #undecidedのみをフィードして、
+            @posts_num 
         else                                                                    #一般ユーザの場合、
             @posts = Post.where(approved: 'OK').page(params[:page]).per(12)     #公開が許可されたポストのみをフィードする
+            @posts_num
         end
         gon.names = get_words_for_refine_search()
     end
@@ -73,7 +75,7 @@ class PostsController < ApplicationController
         #ex. params[:approval] = {"OK"=>"true", "NG"=>"true"}
         #ex. approval_condition = ["OK", "NG"]
 
-        #検索対象となる情報をすべて含むactiverecord associationを取得する
+        #検索対象となる情報をすべて含むactiverecord relationを取得する
         selection_string =                          # joinした後のActiveRecord_Relationでselectするときは、
             'regions.name as region, '+             # カラム名(nameとか)が重複するときは、asで名付け直さないといけないらしい
             'areas.name as area, ' +                # 今回は全て名付け直しておいた。

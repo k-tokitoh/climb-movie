@@ -1,0 +1,8 @@
+// 関東を選択したら"関東 > "と表示する
+$('#current_area').text("<%= @area.name %> > ")
+
+// areaの選択肢を非表示にする
+$('#area_choices').hide()
+
+// パーシャルを返す
+$('#problem_choices').html("<%= escape_javascript(render 'problem_choices') %>");

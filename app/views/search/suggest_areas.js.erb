@@ -1,0 +1,5 @@
+$('#current_region').text("<%= @region.name %> > ")
+
+$('#region_choices').hide()
+
+$('#area_choices').html("<%= escape_javascript(render 'area_choices') %>");

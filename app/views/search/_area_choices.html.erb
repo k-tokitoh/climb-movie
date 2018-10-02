@@ -1,0 +1,3 @@
+<% @region.areas.each do |area| %>
+    <p><%= link_to area.name, search_path(area_id: area.id), {remote: true, id: 'area_choice'} %></p>
+<% end %>
