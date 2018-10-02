@@ -31,6 +31,7 @@ header img {
 .free_word_search_form{
   -webkit-appearance: none;
   width:70%;
+  height:26px;
   margin:0 auto 0;
   display:inline-block;
   border-radius: 6px;
@@ -42,6 +43,7 @@ header img {
 .free_word_search_button{
   -webkit-appearance: none;
   width:28%;
+  height:26px;
   border-radius: 6px;
   background-color: #499475;
   color: white;
@@ -84,10 +86,11 @@ footer{
     margin:30px auto 10px;
   }
 
-.free_word_search_form{
-  height:36px;
-}
-
-.free_word_search_button{
-  height:36px;
+  .free_word_search_form{
+    height:36px;
+  }
+  
+  .free_word_search_button{
+    height:36px;
+  }
 }

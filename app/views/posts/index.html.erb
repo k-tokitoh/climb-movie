@@ -1,5 +1,4 @@
 <!--<p><%= @posts_num %>件のクライミング動画を公開中</p>-->
-<% @grade_correspondence = [['10級', 1], ['9級', 2],['8級', 3], ['7級', 4],['6級', 5], ['5級', 6],['4級', 7], ['3級', 8],['2級', 9], ['1級', 10],['初段', 11], ['二段', 12],['三段', 13], ['四段', 14],['五段', 15], ['六段', 16]] %>
 
 <div class='search-form'>
   <% if session[:admin] == true %>
@@ -13,17 +12,21 @@
         <% undecided = params[:approval][:undecided] %>
         <% ok = params[:approval][:OK] %>
         <% ng = params[:approval][:NG] %>
+        <% suspended = params[:approval][:suspended] %>
       <% else %>
-        <% undecided, ok, ng = true, true, true %>
+        <% undecided, ok, ng, suspended = true, false, false, false %>
       <% end %>
       <!-- オブジェクト名、プロパティ名（チェックが入っていた場合にparams[オブジェクト名]に格納される値）、初期値 -->
+      <% app_num = Post.group(:approved).size %>
       <%= check_box_tag( 'approval[undecided]', true, undecided) %>
       <!-- オブジェクト名（checkboxtagと対応させる）、ラベルとして表示される文字列 -->
-      <%= label_tag('approval[undecided]', "undecided") %>
+      <%= label_tag('approval[undecided]', "undecided(#{app_num.fetch("undecided",0)})") %>
       <%= check_box_tag('approval[OK]', true, ok) %>
-      <%= label_tag('approval[OK]', "OK") %>
+      <%= label_tag('approval[OK]', "OK(#{app_num.fetch("OK",0)})") %>
       <%= check_box_tag('approval[NG]', true, ng) %>
-      <%= label_tag('approval[NG]', "NG") %><br> 
+      <%= label_tag('approval[NG]', "NG(#{app_num.fetch("NG",0)})") %>
+      <%= check_box_tag('approval[suspended]', true, suspended) %>
+      <%= label_tag('approval[suspended]', "suspended(#{app_num.fetch("suspended",0)})") %><br>
       <%= render 'search' %>
     <% end %>
     
@@ -52,13 +55,15 @@
     <div>
       <!--<button class="btn btn-primary" data-toggle="collapse" data-target="#collapse-target<%= i %>" role="button" aria-expanded="false">-->
         <b><%= post.problems.map{ |problem| 
-          "#{problem.name}#{@grade_correspondence.to_h.invert[problem.grade]}"}.join %></b><br>
+          "#{problem.name}#{GRADE_CORRESPONDENCE.to_h.invert[problem.grade]}"}.join %></b><br>
         <span class='region_area'>
           <%= "#{post.problems.first.rock.area.name},#{post.problems.first.rock.area.region.name}" %>
         </span>
         <% if session[:admin] == true %>
-          <br><span class='youtube_title'><%= "'#{post.title}'" %></span>
+          <br><span class="youtube_title"><%= "on youtube: #{post.title}" %></span>
         <% end %>
+
+
       <!--</button>-->
     </div>
 　　<% if session[:admin] == true %>
@@ -68,6 +73,7 @@
           <!-- ↑ authenticity_token: true を書かないと行けない。なぜか。 !-->
           <label class='radio_label'><%= f.radio_button :approved, 'OK' %>OK</label>
           <label class='radio_label'><%= f.radio_button :approved, 'NG' %>NG</label>
+          <label class='radio_label'><%= f.radio_button :approved, 'suspended' %>suspended</label>
           <%= f.submit '更新' %>
         <% end %>
       </div>
