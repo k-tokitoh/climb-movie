@@ -31,7 +31,7 @@ header img {
 .free_word_search_form{
   -webkit-appearance: none;
   width:70%;
-  height:26px;
+  height:32px;
   margin:0 auto 0;
   display:inline-block;
   border-radius: 6px;
@@ -43,7 +43,7 @@ header img {
 .free_word_search_button{
   -webkit-appearance: none;
   width:28%;
-  height:26px;
+  height:32px;
   border-radius: 6px;
   background-color: #499475;
   color: white;
@@ -73,7 +73,6 @@ footer{
 }
 
 /* パソコン用設定 */
-/* 見やすいように暫定的に設定しておきます */
 @media screen and (min-width:680px) {
   header img {
     width: 520px;

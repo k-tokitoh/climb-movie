@@ -1,3 +1,4 @@
-<% @area.rocks.joins(:problems).select('problems.name as name').each do |problem| %>
-    <p><%= link_to problem.name, _path(area_id: area.id), {remote: true, id: 'area_choice'} %></p>
+<p><%= link_to 'このエリアの課題をすべてみる', search_path(area_id: @area.id) %></p>
+<% @area.rocks.joins(:problems).select('problems.id as id, problems.name as name').each do |problem| %>
+    <p><%= link_to problem.name, search_path(problem_id: problem.id) %></p>
 <% end %>

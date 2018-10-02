@@ -80,52 +80,56 @@ class PostsController < ApplicationController
         #検索対象となる情報をすべて含むactiverecord relationを取得する
         selection_string =                          # joinした後のActiveRecord_Relationでselectするときは、
             'regions.name as region, '+             # カラム名(nameとか)が重複するときは、asで名付け直さないといけないらしい
+            'areas.id as area_id, ' +
             'areas.name as area, ' +                # 今回は全て名付け直しておいた。
             'rocks.name as rock, ' +
+            'problems.id as problem_id, ' +
             'problems.name as problem, ' +
             'problems.grade as grade, ' +
             'posts.id as post_id'
-        posts = Region.joins(areas: {rocks: {problems: :posts}})       # 順次joinする
+        
+        # この時点でdbはactiverecord relation
+        db = Region.joins(areas: {rocks: {problems: :posts}})       # 順次joinする
+                    .where!(posts: {approved: approval_condition})   # approval_conditonにマッチするpostのみ取り出す
                     .select(selection_string)                       # 検索に用いるカラムを取り出す
-# .where(posts: {approved: approval_condition})   # approval_conditonにマッチするpostのみ取り出す
-
-        # posts.select{|post|
-        #     # 承認状況
-            
-        #     &&
-        #     # フリーワード検索
-            
-        #     &&
-        #     # エリア
-            
-        #     &&
-        #     # 
-            
-        #     &&
-            
-        # }
         
-        
-
-        if params.has_key?(:q)                              #フリーワード検索の時
+        #フリーワード検索
+        if params.has_key?(:q)
             q = params[:q].gsub(/\p{blank}/,' ').split()    #検索クエリの全角スペースを半角スペースに置換してsplit
-            #各レコードについて、複数の検索条件全てに合致するかをしらべて
-            matched_ids = db.select{ |record| freeword_search(record, q)          # qは検索クエリワードの配列
+            # 各レコードについて、複数の検索条件全てに合致するかをしらべて
+            # select文を適用することで、dbはactiverecord relationからarrayになる
+            db = db.select { |record| freeword_search(record, q) }          # qは検索クエリワードの配列
             #すべての検索条件に合致する場合のみpost_idを記録する
-            }.map{ |record| record.post_id}
-        elsif [:region, :area, :problem, :grade].all?{ |condition| params.has_key?(condition)}   # 詳細検索の時
-            db = db.select{ |record|
-                [:region, :area, :problem].all?{ |condition|
-                    params[condition] == '' || record[condition] == params[condition]    # paramsで空白の時は検査しない
-                }
-            }.select{ |record|
-                    params[:grade][:lower].to_i <= record.grade  && record.grade <= params[:grade][:upper].to_i
-            }
-            matched_ids = db.map{ |record| record.post_id}
         end
+        
+        # 課題指定で検索
+        if params.has_key?(:problem_id)
+            db = db.where(problem_id: params[:problem_id].to_i).to_a
+            # db = db.select{ |record| record.problem_id == params[:problem_id].to_i }
+        end
+        
+        # エリア指定で検索
+        if params.has_key?(:area_id)
+            db = db.where(area_id: params[:area_id].to_i).to_a
+            # db = db.select{ |record| record.area_id == params[:area_id].to_i }.uniq
+        end
+        # この時点でdbは
+        # 課題指定検索をした場合、array　→　処理を完了できる
+        # エリア指定検索でgroup_byをした場合、hash　→　エラーが発生する
 
         
+        # elsif [:region, :area, :problem, :grade].all?{ |condition| params.has_key?(condition)}   # 詳細検索の時
+        #     db = db.select{ |record|
+        #         [:region, :area, :problem].all?{ |condition|
+        #             params[condition] == '' || record[condition] == params[condition]    # paramsで空白の時は検査しない
+        #         }
+        #     }.select{ |record|
+        #             params[:grade][:lower].to_i <= record.grade  && record.grade <= params[:grade][:upper].to_i
+        #     }
+        #     matched_ids = db.map{ |record| record.post_id}
 
+        matched_ids = db.map{ |record| record.post_id}
+        
         posts = Post.where(id: matched_ids)
         @posts = posts.page(params[:page]).per(12)    # 選択されたidのみ表示する
         @posts_num = posts.size
