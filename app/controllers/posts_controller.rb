@@ -2,11 +2,13 @@ class PostsController < ApplicationController
     
     def index
         if session[:admin]                                                      #管理ユーザの場合、
-            @posts = Post.where(approved: 'undecided').page(params[:page]).per(12)                       #undecidedのみをフィードして、
-            @posts_num 
+            posts = Post.where(approved: 'undecided')
+            @posts = posts.page(params[:page]).per(12)                       #undecidedのみをフィードして、
+            @posts_num = posts.size
         else                                                                    #一般ユーザの場合、
-            @posts = Post.where(approved: 'OK').page(params[:page]).per(12)     #公開が許可されたポストのみをフィードする
-            @posts_num
+            posts = Post.where(approved: 'OK')
+            @posts = posts.page(params[:page]).per(12)     #公開が許可されたポストのみをフィードする
+            @posts_num = posts.size
         end
         gon.names = get_words_for_refine_search()
     end
@@ -83,9 +85,27 @@ class PostsController < ApplicationController
             'problems.name as problem, ' +
             'problems.grade as grade, ' +
             'posts.id as post_id'
-        db = Region.joins(areas: {rocks: {problems: :posts}})       # 順次joinする
-                    .where(posts: {approved: approval_condition})   # approval_conditonにマッチするpostのみ取り出す
+        posts = Region.joins(areas: {rocks: {problems: :posts}})       # 順次joinする
                     .select(selection_string)                       # 検索に用いるカラムを取り出す
+# .where(posts: {approved: approval_condition})   # approval_conditonにマッチするpostのみ取り出す
+
+        # posts.select{|post|
+        #     # 承認状況
+            
+        #     &&
+        #     # フリーワード検索
+            
+        #     &&
+        #     # エリア
+            
+        #     &&
+        #     # 
+            
+        #     &&
+            
+        # }
+        
+        
 
         if params.has_key?(:q)                              #フリーワード検索の時
             q = params[:q].gsub(/\p{blank}/,' ').split()    #検索クエリの全角スペースを半角スペースに置換してsplit
@@ -106,8 +126,9 @@ class PostsController < ApplicationController
 
         
 
-        @posts = Post.where(id: matched_ids).page(params[:page]).per(12)    # 選択されたidのみ表示する
-        @posts_num = Post.where(approved: 'OK').length
+        posts = Post.where(id: matched_ids)
+        @posts = posts.page(params[:page]).per(12)    # 選択されたidのみ表示する
+        @posts_num = posts.size
         gon.names = get_words_for_refine_search()
         render 'index'
     end

@@ -39,8 +39,9 @@
   
 </div>
 
-<%= "#{@posts.size}件の動画を表示" %>
+
 <div class='posts'>
+  <p><%= "#{@posts_num}件の動画を表示" %></p>
   <% if @posts.length == 0 %>
     検索条件に合う動画がありません
   <% end %>
@@ -54,8 +55,7 @@
       </div>
     <!--</div>-->
     <div>
-      <!--<button class="btn btn-primary" data-toggle="collapse" data-target="#collapse-target<%= i %>" role="button" aria-expanded="false">-->
-        <b><%= post.problems.map{ |problem| 
+      <%= post.problems.map{ |problem| 
           "#{problem.name}#{GRADE_CORRESPONDENCE.to_h.invert[problem.grade]}"}.join %></b><br>
         <span class='region_area'>
           <%= "#{post.problems.first.rock.area.name},#{post.problems.first.rock.area.region.name}" %>
