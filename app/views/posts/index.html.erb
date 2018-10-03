@@ -40,26 +40,37 @@
 </div>
 
 <%= "#{@posts_num}件の動画を表示" %>
+
 <div class='posts'>
+  
   <% if @posts.length == 0 %>
     検索条件に合う動画がありません
   <% end %>
+  
   <% @posts.each_with_index do |post, i| %>
   <div class='post'>
 
-      <div class="thumbnail">
-        <a href="https://www.youtube.com/embed/<%= post.video.html_safe %>?" data-lity="data-lity">
-          <%= image_tag("http://img.youtube.com/vi/#{post.video.html_safe}/mqdefault.jpg", { :border => '0', :alt => 'title'}) %>
-        </a>
-      </div>
-      
-      <%= post.problems.map{ |problem| 
-        "#{problem.name}#{GRADE_CORRESPONDENCE.to_h.invert[problem.grade]}"}.join -%></b><br>
-      <span class='region_area'><%= "#{post.problems.first.rock.area.name},#{post.problems.first.rock.area.region.name}" -%></span>
-      <% if session[:admin] == true -%>
-        <br><span class="youtube_title"><%= "on youtube: #{post.title}" -%></span>
-      <% end -%>
-      
+    <!--サムネイル画像-->
+    <div class="thumbnail">
+      <a href="https://www.youtube.com/embed/<%= post.video.html_safe %>?" data-lity="data-lity">
+        <%= image_tag("http://img.youtube.com/vi/#{post.video.html_safe}/mqdefault.jpg", { :border => '0', :alt => 'title'}) %>
+      </a>
+    </div>
+    
+    <!--動画の説明文-->
+    <%= post.problems.map{ |problem| 
+      "#{problem.name}#{GRADE_CORRESPONDENCE.to_h.invert[problem.grade]}"}.join -%></b><br>
+    <span class='region_area'><%= "#{post.problems.first.rock.area.name},#{post.problems.first.rock.area.region.name}" -%></span>
+    
+    <% if @feed_mode == 'area' %>
+      <br>この課題の他の動画をみる(XX件)
+    <% end %>
+    
+    <% if session[:admin] == true -%>
+      <br><span class="youtube_title"><%= "on youtube: #{post.title}" -%></span>
+    <% end -%>
+    
+    <!--承認状況更新フォーム-->  
 　　<% if session[:admin] == true -%>
 　　  <div class="request_ajax_update">
         承認状況 : <span class="upproval_state" ><%= post.approved %></span>
@@ -73,9 +84,13 @@
       </div>
     <% end -%>
   </div>
-
   <% end -%>
 </div>
+
+<% if @feed_mode == 'problem' %>
+  このエリアの他の課題をみる
+<% end %>
+
 <div class="paginator">
   <%= paginate @posts %>
 </div>

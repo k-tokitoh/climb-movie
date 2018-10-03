@@ -90,7 +90,7 @@ class PostsController < ApplicationController
         
         # この時点でdbはactiverecord relation
         db = Region.joins(areas: {rocks: {problems: :posts}})       # 順次joinする
-                    .where!(posts: {approved: approval_condition})   # approval_conditonにマッチするpostのみ取り出す
+                    .where(posts: {approved: approval_condition})   # approval_conditonにマッチするpostのみ取り出す
                     .select(selection_string)                       # 検索に用いるカラムを取り出す
         
         #フリーワード検索
@@ -104,19 +104,17 @@ class PostsController < ApplicationController
         
         # 課題指定で検索
         if params.has_key?(:problem_id)
-            db = db.where(problem_id: params[:problem_id].to_i).to_a
-            # db = db.select{ |record| record.problem_id == params[:problem_id].to_i }
+            db = db.select{ |record| record.problem_id == params[:problem_id].to_i }
+            @feed_mode = 'problem'
         end
         
         # エリア指定で検索
         if params.has_key?(:area_id)
-            db = db.where(area_id: params[:area_id].to_i).to_a
-            # db = db.select{ |record| record.area_id == params[:area_id].to_i }.uniq
+            # selectで指定されたエリアの課題を抽出する
+            # group_by以下で１つの課題に対して、一番うえにある動画レコードのみを抽出する
+            db = db.select{ |record| record.area_id == params[:area_id].to_i }.group_by{|record| record.problem_id}.values.map{|records| records[0]}
+            @feed_mode = 'area'
         end
-        # この時点でdbは
-        # 課題指定検索をした場合、array　→　処理を完了できる
-        # エリア指定検索でgroup_byをした場合、hash　→　エラーが発生する
-
         
         # elsif [:region, :area, :problem, :grade].all?{ |condition| params.has_key?(condition)}   # 詳細検索の時
         #     db = db.select{ |record|
