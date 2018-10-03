@@ -1,3 +1,4 @@
 <% @region.areas.each do |area| %>
-    <p><%= link_to area.name, suggest_problems_path(area_id: area.id), {remote: true, id: 'area_choice'} %></p>
+
+    <p><%= link_to "#{area.name}(#{@posts_num_by_area.nil?})", suggest_problems_path(area_id: area.id), {remote: true, id: 'area_choice'} %></p>
 <% end %>

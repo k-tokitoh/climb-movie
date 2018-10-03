@@ -6,11 +6,25 @@ class PostsController < ApplicationController
             @posts = posts.page(params[:page]).per(12)                       #undecidedのみをフィードして、
             @posts_num = posts.size
         else                                                                    #一般ユーザの場合、
-            posts = Post.where(approved: 'OK')
-            @posts = posts.page(params[:page]).per(12)     #公開が許可されたポストのみをフィードする
+            # いくつかテーブルをくっつけてよみこみ
+            records = Area.joins(rocks: {problems: :posts}).select('areas.id, posts.video, posts.approved,posts.id as post_id, problems.id as problem_id')
+            
+            # 公開が許可されているポストに限定する
+            records = records.where(posts: {approved: 'OK'})
+            
+            # キー：課題のid、値：その課題に紐づいた動画の数　というハッシュをつくっておく 
+            @posts_num_by_problem = records.group_by{|record| record.problem_id}.map{|k,v| [k,v.size]}.to_h
+            
+            post_ids = records.group_by{|record|record.problem_id}.values.map{|r|r[0].post_id}
+            posts = Post.where(id: post_ids)
+            @posts = posts.page(params[:page]).per(12)
             @posts_num = posts.size
         end
         gon.names = get_words_for_refine_search()
+        
+        @feed_mode = '1_problem_1_movie'
+
+
     end
     
     def update                                  #承認状況等の更新
@@ -87,11 +101,18 @@ class PostsController < ApplicationController
             'problems.name as problem, ' +
             'problems.grade as grade, ' +
             'posts.id as post_id'
+            
+        db = Region.joins(areas: {rocks: {problems: :posts}}).select(selection_string)
+        # この時点でdbはactiverecord relation(ハッシュを要素とする配列みたいなもの)
+
+        # キー：エリアのid、値：そのエリアに紐づいた動画の数　というハッシュをつくっておく 
+        @posts_num_by_area = db.group_by{|record| record.area_id}.map{|k,v| [k,v.size]}.to_h
         
-        # この時点でdbはactiverecord relation
-        db = Region.joins(areas: {rocks: {problems: :posts}})       # 順次joinする
-                    .where(posts: {approved: approval_condition})   # approval_conditonにマッチするpostのみ取り出す
-                    .select(selection_string)                       # 検索に用いるカラムを取り出す
+        # キー：課題のid、値：その課題に紐づいた動画の数　というハッシュをつくっておく 
+        @posts_num_by_problem = db.group_by{|record| record.problem_id}.map{|k,v| [k,v.size]}.to_h
+        
+        # 承認状況で検索
+        db = db.where(posts: {approved: approval_condition})
         
         #フリーワード検索
         if params.has_key?(:q)
@@ -103,9 +124,12 @@ class PostsController < ApplicationController
         end
         
         # 課題指定で検索
-        if params.has_key?(:problem_id)
-            db = db.select{ |record| record.problem_id == params[:problem_id].to_i }
-            @feed_mode = 'problem'
+        if params.has_key?(:problem_ids)
+            # 複数の課題が指定されている場合は、それらの課題のうちどれかに該当する動画を返すようにしたい（未実装）
+            db = db.select{ |record| params[:problem_ids].include?(record.problem_id.to_s) }
+            
+            # db = db.select{ |record| record.problem_id == params[:problem_id].to_i }
+            @feed_mode = '1_problem_many_movies'
         end
         
         # エリア指定で検索
@@ -113,21 +137,10 @@ class PostsController < ApplicationController
             # selectで指定されたエリアの課題を抽出する
             # group_by以下で１つの課題に対して、一番うえにある動画レコードのみを抽出する
             db = db.select{ |record| record.area_id == params[:area_id].to_i }.group_by{|record| record.problem_id}.values.map{|records| records[0]}
-            @feed_mode = 'area'
+            @feed_mode = '1_problem_1_movie'
         end
-        
-        # elsif [:region, :area, :problem, :grade].all?{ |condition| params.has_key?(condition)}   # 詳細検索の時
-        #     db = db.select{ |record|
-        #         [:region, :area, :problem].all?{ |condition|
-        #             params[condition] == '' || record[condition] == params[condition]    # paramsで空白の時は検査しない
-        #         }
-        #     }.select{ |record|
-        #             params[:grade][:lower].to_i <= record.grade  && record.grade <= params[:grade][:upper].to_i
-        #     }
-        #     matched_ids = db.map{ |record| record.post_id}
 
         matched_ids = db.map{ |record| record.post_id}
-        
         posts = Post.where(id: matched_ids)
         @posts = posts.page(params[:page]).per(12)    # 選択されたidのみ表示する
         @posts_num = posts.size

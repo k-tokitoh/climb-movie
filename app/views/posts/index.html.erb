@@ -62,8 +62,9 @@
       "#{problem.name}#{GRADE_CORRESPONDENCE.to_h.invert[problem.grade]}"}.join -%></b><br>
     <span class='region_area'><%= "#{post.problems.first.rock.area.name},#{post.problems.first.rock.area.region.name}" -%></span>
     
-    <% if @feed_mode == 'area' %>
-      <br>この課題の他の動画をみる(XX件)
+    <% if @feed_mode == '1_problem_1_movie' %>
+      <br><%= "この課題の他の動画をみる(#{@posts_num_by_problem[post.problems.first.id]}件)" %>
+      <!--１つの動画に複数の課題がひもづけられている場合はそれらの課題がもっている動画数の合計を表示させたい（未実装）-->
     <% end %>
     
     <% if session[:admin] == true -%>
@@ -87,7 +88,7 @@
   <% end -%>
 </div>
 
-<% if @feed_mode == 'problem' %>
+<% if @feed_mode == '1_problem_many_movies' %>
   このエリアの他の課題をみる
 <% end %>
 

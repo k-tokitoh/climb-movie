@@ -55,9 +55,11 @@
     display:inline-block;
   }
   
-  .post:hover{
-    transform: translateY(-5px);
-	transition-duration: 0.5s;
+  .thumbnail:hover{
+      opacity: 0.62;
+      transition: 0.4s;
+//     transform: translateY(-5px);
+// 	transition-duration: 0.5s;
   }
 }
 

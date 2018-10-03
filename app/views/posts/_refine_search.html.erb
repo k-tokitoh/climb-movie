@@ -1,27 +1,27 @@
-<% if false %>
-<div>
-  <a class="collapsed" data-toggle="collapse" data-target="#rs-box">
-    <div class="card-header" id="headingOne"><h5>詳細検索</h5></div>
-  </a>
-  <% has_params = params.has_key?(:region) or params.has_key?(:area) or params.has_key?(:problem) %>
-  <div id="rs-box" class="collapse<%= has_params ? ' show' : '' %>">
-    <%= form_tag("/search", method: "get") do %>
-    <%= render partial: 'refine_search_card', locals: { id: 'region', title: '地域', display: 'block', default_word: params.fetch('region', '') } %>
-    <%= render partial: 'refine_search_card', locals: { id: 'area' , title: '岩場', dispaly: 'none', default_word: params.fetch('area', '')} %>
-    <%= render partial: 'refine_search_card', locals: { id: 'problem', title: '課題', dispaly: 'none', default_word: params.fetch('problem', '')} %>
-    グレード検索の初期値として、既に検索値があればそれを、なければデフォルト値を用意する。
-    <% grade = params.fetch(:grade, {lower: 1, upper: 16}) %>
+<!--<% if false %>-->
+<!--<div>-->
+<!--  <a class="collapsed" data-toggle="collapse" data-target="#rs-box">-->
+<!--    <div class="card-header" id="headingOne"><h5>詳細検索</h5></div>-->
+<!--  </a>-->
+<!--  <% has_params = params.has_key?(:region) or params.has_key?(:area) or params.has_key?(:problem) %>-->
+<!--  <div id="rs-box" class="collapse<%= has_params ? ' show' : '' %>">-->
+<!--    <%= form_tag("/search", method: "get") do %>-->
+<!--    <%= render partial: 'refine_search_card', locals: { id: 'region', title: '地域', display: 'block', default_word: params.fetch('region', '') } %>-->
+<!--    <%= render partial: 'refine_search_card', locals: { id: 'area' , title: '岩場', dispaly: 'none', default_word: params.fetch('area', '')} %>-->
+<!--    <%= render partial: 'refine_search_card', locals: { id: 'problem', title: '課題', dispaly: 'none', default_word: params.fetch('problem', '')} %>-->
+<!--    グレード検索の初期値として、既に検索値があればそれを、なければデフォルト値を用意する。-->
+<!--    <% grade = params.fetch(:grade, {lower: 1, upper: 16}) %>-->
 
-    <div class="card-header" id="headingOne">
-    <p>グレード : 
-    select(オブジェクト名, プロパティ名, タグの情報 [, オプション])
-    <%= select(:grade, :lower, @grade_correspondence, selected: grade[:lower]) %>
-    ～<%= select(:grade, :upper, @grade_correspondence, selected: grade[:upper]) %>
-    <%= button_tag sanitize('詳細検索'), type: "submit", class: 'free_word_search_button' %>
-    <% end %>
-    </p>
-    </div>
-  </div>
-</div>
-<% end %>
+<!--    <div class="card-header" id="headingOne">-->
+<!--    <p>グレード : -->
+<!--    select(オブジェクト名, プロパティ名, タグの情報 [, オプション])-->
+<!--    <%= select(:grade, :lower, @grade_correspondence, selected: grade[:lower]) %>-->
+<!--    ～<%= select(:grade, :upper, @grade_correspondence, selected: grade[:upper]) %>-->
+<!--    <%= button_tag sanitize('詳細検索'), type: "submit", class: 'free_word_search_button' %>-->
+<!--    <% end %>-->
+<!--    </p>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</div>-->
+<!--<% end %>-->
 
