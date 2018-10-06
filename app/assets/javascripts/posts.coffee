@@ -5,11 +5,30 @@
 $(document).on 'turbolinks:load', ->                        # 画面が表示されたら、以下を実行せよ
 
   $('#refine_search_body').css {
-    display: 'none';
+    display: "none",
   }
 
   $('#refine_search_title').on 'click', ->
     $('#refine_search_body').toggle()
+
+  $('#current_region').on 'click', ->
+    $('#refine_search_body').show()
+
+  $('#current_area').on 'click', ->
+    $('#refine_search_body').show()
+
+  $('.thumbnail').on 'click', ->
+    $('.region_area').text('aaaaaaaaaaaa')
+    $.ajax
+      async:      true
+      type:       "GET"
+      url:        "/increment_hits"
+      data:       {post_id: 1}
+      # dataType:   'json'
+      context:    this
+      processData: false
+    
+  # debugger
     
   # $('#region_choice').on 'ajax:complete', (event) ->
   #   # $('#area_choices').text(JSON.stringify(data))

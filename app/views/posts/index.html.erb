@@ -41,55 +41,10 @@
 
 <%= "#{@posts_num}件の動画を表示" %>
 
-<div class='posts'>
-  
-  <% if @posts.length == 0 %>
-    検索条件に合う動画がありません
-  <% end %>
-  
-  <% @posts.each_with_index do |post, i| %>
-  <div class='post'>
-
-    <!--サムネイル画像-->
-    <div class="thumbnail">
-      <a href="https://www.youtube.com/embed/<%= post.video.html_safe %>?" data-lity="data-lity">
-        <%= image_tag("http://img.youtube.com/vi/#{post.video.html_safe}/mqdefault.jpg", { :border => '0', :alt => 'title'}) %>
-      </a>
-    </div>
-    
-    <!--動画の説明文-->
-    <%= post.problems.map{ |problem| 
-      "#{problem.name}#{GRADE_CORRESPONDENCE.to_h.invert[problem.grade]}"}.join -%></b><br>
-    <span class='region_area'><%= "#{post.problems.first.rock.area.name},#{post.problems.first.rock.area.region.name}" -%></span>
-    
-    <% if @feed_mode == '1_problem_1_movie' %>
-      <br><%= "この課題の他の動画をみる(#{@posts_num_by_problem[post.problems.first.id]}件)" %>
-      <!--１つの動画に複数の課題がひもづけられている場合はそれらの課題がもっている動画数の合計を表示させたい（未実装）-->
-    <% end %>
-    
-    <% if session[:admin] == true -%>
-      <br><span class="youtube_title"><%= "on youtube: #{post.title}" -%></span>
-    <% end -%>
-    
-    <!--承認状況更新フォーム-->  
-　　<% if session[:admin] == true -%>
-　　  <div class="request_ajax_update">
-        承認状況 : <span class="upproval_state" ><%= post.approved %></span>
-        <%= form_for(post, remote: true, authenticity_token: true) do |f| -%>
-          <!-- ↑ authenticity_token: true を書かないと行けない。なぜか。 !-->
-          <label class='radio_label'><%= f.radio_button :approved, 'OK' -%>OK</label>
-          <label class='radio_label'><%= f.radio_button :approved, 'NG' -%>NG</label>
-          <label class='radio_label'><%= f.radio_button :approved, 'suspended' -%>suspended</label>
-          <%= f.submit '更新' %>
-        <% end -%>
-      </div>
-    <% end -%>
-  </div>
-  <% end -%>
-</div>
+<%= render 'feed' %>
 
 <% if @feed_mode == '1_problem_many_movies' %>
-  このエリアの他の課題をみる
+  <%= link_to "#{@problem.rock.area.name}の全ての課題をみる", search_path(area_id: @problem.rock.area.id) %><br>
 <% end %>
 
 <div class="paginator">

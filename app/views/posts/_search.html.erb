@@ -1,3 +1,4 @@
+<!--フリーワード検索-->
 <!--テキストフィールドの初期値として、既に検索クエリがあればそれを、なければデフォルト値を用意する。-->
 <% q = params.fetch(:q, '') %>
 <% q = '岩場名・課題名で検索' if q=='' %>
@@ -6,22 +7,48 @@
     <%= button_tag sanitize('<i class="fas fa-search"></i>'), type: "submit", class: 'free_word_search_button' %>
 </p>
 
+
+
+<!--絞り込み検索-->
 <div id='refine_search'>
-    <div id='refine_search_title'>
-        絞り込み検索
-    </div>
-    <div id='refine_search_body'>
-        <p id='current_condition'>
-            <span id='current_region'></span>
-            <span id='current_area'></span>
-            <span id='current_problem'></span>
-        </p>
-        <div id='region_choices'>
-            <% Region.all.each do |region| %>
-                <p><%= link_to region.name, suggest_areas_path(region_id: region.id), {remote: true, id: 'region_choice'} %></p>
+    <p id='refine_search_title'>絞り込み検索</p>
+    <p id='current_condition'>
+        <span id='current_region'>
+            <% if @area.present? %>
+                <%= link_to @area.region.name, suggest_areas_path(region_id: @area.region.id), {remote: true} %>
+                <%= " > " %>
             <% end %>
-        </div>
-        <p id='area_choices'></p>
-        <p id='problem_choices'></p>
+        </span>
+        <span id='current_area'>
+            <% if @area.present? %>
+                <%= link_to @area.name, suggest_problems_path(area_id: @area.id), {remote: true} %>
+                <%= " > " %>
+            <% end %>
+        </span>
+        <span id='current_problem'>
+            <% if @problem.present? %>
+                <%= @problem.name %>
+            <% end %>
+        </span>
+    </p>
+
+    
+    
+    <div id='refine_search_body'>
+            
+        <ul id='region_choices'>
+            <% if @area.nil? %>
+                <% @region.each do |region| %>
+                    <li><%= link_to region.name, suggest_areas_path(region_id: region.id), {remote: true, class: 'region_choice'} %></li>
+                <% end %>
+            <% end %>
+        </ul>
+        
+        <ul id='area_choices'></ul>
+        <ul id='problem_choices'>
+            <% if @area.present? %>
+                <%= render 'search/problem_choices'%>
+            <% end %>
+        </ul>
     </div>
 </div>

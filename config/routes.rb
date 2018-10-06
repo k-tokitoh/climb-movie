@@ -14,6 +14,7 @@ Rails.application.routes.draw do
   
   get 'suggest_areas', to: 'search#suggest_areas'
   get 'suggest_problems', to: 'search#suggest_problems'
+  get 'increment_hits', to: 'posts#increment_hits'
 
   get 'login', to: 'sessions#new'
   post 'login', to: 'sessions#create'

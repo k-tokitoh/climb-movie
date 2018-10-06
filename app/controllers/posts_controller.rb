@@ -1,36 +1,47 @@
 class PostsController < ApplicationController
     
     def index
-        if session[:admin]                                                      #管理ユーザの場合、
+        # いくつかテーブルをくっつけてよみこみ
+        records = Area.joins(rocks: {problems: :posts}).select('areas.id, posts.video, posts.approved,posts.id as post_id, problems.id as problem_id')
+            
+        if session[:admin] 
             posts = Post.where(approved: 'undecided')
             @posts = posts.page(params[:page]).per(12)                       #undecidedのみをフィードして、
             @posts_num = posts.size
-        else                                                                    #一般ユーザの場合、
-            # いくつかテーブルをくっつけてよみこみ
-            records = Area.joins(rocks: {problems: :posts}).select('areas.id, posts.video, posts.approved,posts.id as post_id, problems.id as problem_id')
-            
+        else
             # 公開が許可されているポストに限定する
             records = records.where(posts: {approved: 'OK'})
-            
-            # キー：課題のid、値：その課題に紐づいた動画の数　というハッシュをつくっておく 
-            @posts_num_by_problem = records.group_by{|record| record.problem_id}.map{|k,v| [k,v.size]}.to_h
-            
+
+            # 1つの課題につき1つの動画を抽出する
             post_ids = records.group_by{|record|record.problem_id}.values.map{|r|r[0].post_id}
             posts = Post.where(id: post_ids)
             @posts = posts.page(params[:page]).per(12)
             @posts_num = posts.size
         end
+        
+        # キー：課題のid、値：その課題に紐づいた動画の数　というハッシュをつくっておく 
+        @posts_num_by_problem = records.group_by{|record| record.problem_id}.map{|k,v| [k,v.size]}.to_h
+        
         gon.names = get_words_for_refine_search()
         
         @feed_mode = '1_problem_1_movie'
-
+        @region = Region.all
 
     end
     
-    def update                                  #承認状況等の更新
+    #承認状況等の更新
+    def update
         @post = Post.find(params[:id])
         @post.update_attributes(post_params)    #post_paramsはprivateで定義している
         render plain: @post.approved            # @postの承認状況(を表すテキスト)を送る
+    end
+
+    def increment_hits
+        byebug
+      post = Post.find(params[:post_id])
+      incremented_hit = post.hit + 1
+      post.update({hit: incremented_hit})
+      render json: hit
     end
 
     def get_youtube_videos
@@ -130,6 +141,8 @@ class PostsController < ApplicationController
             
             # db = db.select{ |record| record.problem_id == params[:problem_id].to_i }
             @feed_mode = '1_problem_many_movies'
+            @problem = Problem.find(params[:problem_ids][0])
+            @area = @problem.rock.area
         end
         
         # エリア指定で検索
@@ -138,10 +151,12 @@ class PostsController < ApplicationController
             # group_by以下で１つの課題に対して、一番うえにある動画レコードのみを抽出する
             db = db.select{ |record| record.area_id == params[:area_id].to_i }.group_by{|record| record.problem_id}.values.map{|records| records[0]}
             @feed_mode = '1_problem_1_movie'
+            @area = Area.find(params[:area_id])
         end
 
         matched_ids = db.map{ |record| record.post_id}
         posts = Post.where(id: matched_ids)
+        @region = Region.all
         @posts = posts.page(params[:page]).per(12)    # 選択されたidのみ表示する
         @posts_num = posts.size
         gon.names = get_words_for_refine_search()
