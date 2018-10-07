@@ -1,5 +1,6 @@
 class PostsController < ApplicationController
     
+    # トップ画面の表示
     def index
         # いくつかテーブルをくっつけてよみこみ
         records = Area.joins(rocks: {problems: :posts}).select('areas.id, posts.video, posts.approved,posts.id as post_id, problems.id as problem_id')
@@ -10,23 +11,22 @@ class PostsController < ApplicationController
             @posts_num = posts.size
         else
             # 公開が許可されているポストに限定する
-            records = records.where(posts: {approved: 'OK'})
+            records = records.where(posts: {approved: 'OK'}).order('posts.hit DESC')
 
             # 1つの課題につき1つの動画を抽出する
             post_ids = records.group_by{|record|record.problem_id}.values.map{|r|r[0].post_id}
-            posts = Post.where(id: post_ids)
+            posts = Post.where(id: post_ids).order(hit: :DESC)
             @posts = posts.page(params[:page]).per(12)
             @posts_num = posts.size
+            @feed_mode = '1_problem_1_movie'
         end
         
-        # キー：課題のid、値：その課題に紐づいた動画の数　というハッシュをつくっておく 
+        # {:課題のid => その課題に紐づいた動画の数} というハッシュをつくっておく 
         @posts_num_by_problem = records.group_by{|record| record.problem_id}.map{|k,v| [k,v.size]}.to_h
         
-        gon.names = get_words_for_refine_search()
+        # gon.names = get_words_for_refine_search()
         
-        @feed_mode = '1_problem_1_movie'
         @region = Region.all
-
     end
     
     #承認状況等の更新
@@ -37,9 +37,10 @@ class PostsController < ApplicationController
     end
 
     def increment_hits
-        post = Post.find(params[:post_id])
-        post.increment(:hit, 1)
-        render plain: post.hit
+        hit = Post.find(params[:post_id]).hit
+        hit += 1
+        Post.find(params[:post_id]).update(hit: hit)
+        render plain: hit
     end
 
     def get_youtube_videos

@@ -1,9 +1,5 @@
 <ul id='posts'>
   
-  <% if @posts.length == 0 %>
-    検索条件に合う動画がありません
-  <% end %>
-  
   <% @posts.each_with_index do |post, i| %>
     <li class='post' id='<%= post.id %>'>
   
@@ -16,7 +12,7 @@
       
       <!--動画の説明文-->
       <% if @feed_mode == '1_problem_1_movie' %>
-        <%= link_to "#{post.problems.first.name}#{GRADE_CORRESPONDENCE.to_h.invert[post.problems.first.grade]} (#{@posts_num_by_problem[post.problems.first.id]}件の動画)", search_path(problem_ids: [post.problems.first.id]) %><br>
+        <%= link_to "<b>#{post.problems.first.name} #{GRADE_CORRESPONDENCE.to_h.invert[post.problems.first.grade]}</b> (#{@posts_num_by_problem[post.problems.first.id]}件の動画)".html_safe, search_path(problem_ids: [post.problems.first.id]) %><br>
         <!--１つの動画に複数の課題がひもづけられている場合はそれらの課題がもっている動画数の合計を表示させたい（未実装）-->
       <% else %>
         <%= post.problems.map{ |problem| 
@@ -25,11 +21,7 @@
       <span class='region_area'><%= "#{post.problems.first.rock.area.name},#{post.problems.first.rock.area.region.name}" -%></span>
       
       <span class='hit' id="hit_<%= post.id %>">
-        <% if post.hit.nil? %>
-          nil
-        <% else %>
-          <%= post.hit %>
-        <% end %>
+        <%= "#{post.hit} views" %>
       </span>
       
       

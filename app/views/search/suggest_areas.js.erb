@@ -1,16 +1,16 @@
 <!--現在の検索条件としてregion名を表示する-->
-$('#current_region').html("<%= escape_javascript(link_to(@region.name, suggest_areas_path(region_id: @region.id), {remote: true, class: 'area_choice'})) %> > ");
+$('#current_region').html("<%= escape_javascript(link_to(@region.name, suggest_areas_path(region_id: @region.id), {remote: true, class: 'area_choice'})) %> > ").then($('#current_condition').css({'border-bottom': 'dotted 1.5px'}));
 
 <!--現在の検索条件からarea名、problem名をリセットする-->
 $('#current_area').text("")
 $('#current_problem').text("")
 
-<!--regionの選択肢を非表示にする-->
-$('#region_choices').hide()
+
 
 <!--areaの選択肢を生成する-->
-$('#area_choices').html("<%= escape_javascript(render 'area_choices') %>")
-$('#area_choices').show()
+$('#refine_search_body')
+    .html("<%= escape_javascript(render 'area_choices') %>")
+    .show('slow')
 
-<!--problemの選択肢を非表示にする-->
-$('#problem_choices').hide()
+$('#refine_search_title').html('<i class="fas fa-minus-square"></i> 絞りこみ検索')
+
