@@ -18,18 +18,21 @@ $(document).on 'turbolinks:load', ->                        # 画面が表示さ
     $('#refine_search_body').show()
 
   $('.thumbnail').on 'click', ->
-    $('.region_area').text('aaaaaaaaaaaa')
+    # $('.region_area').text('aaaaaaaaaaaa')
+    # console.log $(this#id)
+    
+    _post_id = $(this).closest('.post').attr('id')
+    
     $.ajax
-      async:      true
-      type:       "GET"
-      url:        "/increment_hits"
-      data:       {post_id: 1}
-      # dataType:   'json'
-      context:    this
-      processData: false
-    
-  # debugger
-    
+      async:        true,
+      type:         "GET",
+      url:          "/increment_hits",
+      data:         {post_id: _post_id},
+      dataType:     'text',
+      context:      this,
+      success:      (event) ->
+        $('#hit_'+_post_id).text(event)
+
   # $('#region_choice').on 'ajax:complete', (event) ->
   #   # $('#area_choices').text(JSON.stringify(data))
   #   response = event.detail[0].response

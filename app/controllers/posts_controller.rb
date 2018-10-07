@@ -37,11 +37,9 @@ class PostsController < ApplicationController
     end
 
     def increment_hits
-        byebug
-      post = Post.find(params[:post_id])
-      incremented_hit = post.hit + 1
-      post.update({hit: incremented_hit})
-      render json: hit
+        post = Post.find(params[:post_id])
+        post.increment(:hit, 1)
+        render plain: post.hit
     end
 
     def get_youtube_videos
