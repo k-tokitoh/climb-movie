@@ -37,11 +37,7 @@
     <div id='refine_search_body'>
         
         <% if @area.nil? %>
-            <ul id='refine_search_choices'>
-            <% @region.each do |region| %>
-                <li><%= link_to region.name, suggest_areas_path(region_id: region.id), {remote: true, class: 'region_choice'} %></li>
-            <% end %>
-            </ul>
+            <%= render 'search/region_choices'%>
         <% else %>
             <%= render 'search/problem_choices'%>
         <% end %>

@@ -5,14 +5,17 @@
     <span class='name'></span>
     <span class='problems'>problems</span>
     <span class='posts_OK'>posts_OK</span>
+    <span class='name_field'>name</span>
+    <span class='other_names_field'>other_names(','でsplit)</span>
     
     <% posts_OK = @area.rocks.joins(problems: :posts).select('rock_id, approved').where('posts.approved' => 'OK').group(:rock_id).size %>
     
         <%= form_for(Rock.new) do |f| %>
             <span class='name'>(new rock)</span>
             <span class='problems'></span>
-    <span class='posts_OK'></span>
-            <%= f.text_field :name, class: 'text_field' %>
+            <span class='posts_OK'></span>
+            <span class='name_field'><%= f.text_field :name, class: 'text_field' %></span>
+            <span class='other_names_field'><%= f.text_field :other_names, class: 'text_field' %></span>
             <%= f.hidden_field :area_id, value: @area.id %>
             <%= f.submit class: 'submit' %>
         <% end %>
@@ -21,7 +24,8 @@
                 <span class='name'><%= link_to rock.name, controller: "problems", action: "index", rock_id: rock.id %></span>
                 <span class='problems'><%= rock.problems.length %></span>
                 <span class='posts_OK'><%= posts_OK.fetch(rock.id, 0) %></span>
-                <%= f.text_field :name, class: 'text_field' %>
+                <span class='name_field'><%= f.text_field :name, class: 'text_field' %></span>
+                <span class='other_names_field'><%= f.text_field :other_names, class: 'text_field' %></span>
                 <%= f.submit class: 'submit' %>
                 <%= link_to 'delete', rock, method: :delete, data: {confirm: "ARE YOU SURE?"} %>
             <% end %>

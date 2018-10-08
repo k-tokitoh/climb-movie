@@ -5,14 +5,14 @@ class RocksController < ApplicationController
     end
 
     def create
-        Area.find(params[:rock][:area_id]).rocks.create(name: params[:rock][:name])
+        Area.find(params[:rock][:area_id]).rocks.create(name: params[:rock][:name], other_names: params[:rock][:other_names])
         @area = Area.find(params[:rock][:area_id])
         render 'index'
     end
 
     def update
         @area = Rock.find(params[:id]).area
-        Rock.find(params[:id]).update(name: params[:rock][:name])
+        Rock.find(params[:id]).update(name: params[:rock][:name], other_names: params[:rock][:other_names])
         render 'index'
     end
 

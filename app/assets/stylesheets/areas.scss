@@ -2,9 +2,13 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
-.name, .text_field{
+.name, .name_field, .alias_field{
     display: inline-block;
-    width: 180px;    
+    width: 210px;
+}
+
+.name_field, .alias_field{
+    text-align: center;
 }
 
 .rocks{

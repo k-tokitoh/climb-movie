@@ -5,14 +5,14 @@ class ProblemsController < ApplicationController
     end
 
     def create
-        Rock.find(params[:problem][:rock_id]).problems.create(name: params[:problem][:name], grade: params[:problem][:grade].to_i)
+        Rock.find(params[:problem][:rock_id]).problems.create(name: params[:problem][:name], grade: params[:problem][:grade].to_i, other_names: params[:problem][:other_names])
         @rock = Rock.find(params[:problem][:rock_id])
         render 'index'
     end
 
     def update
         @rock = Problem.find(params[:id]).rock
-        Problem.find(params[:id]).update(name: params[:problem][:name], grade: params[:problem][:grade].to_i)
+        Problem.find(params[:id]).update(name: params[:problem][:name], grade: params[:problem][:grade].to_i, other_names: params[:problem][:other_names])
         render 'index'
     end
 

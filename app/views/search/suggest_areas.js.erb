@@ -1,6 +1,6 @@
 <!--現在の検索条件としてregion名を表示する-->
-$('#current_region').html("<%= escape_javascript(link_to(@region.name, suggest_areas_path(region_id: @region.id), {remote: true, class: 'area_choice'})) %> > ")
-<!--.then($('#current_condition').css({'border-bottom': 'dotted 1.5px'}));-->
+$('#current_region').html("<%= escape_javascript(link_to '全国', suggest_regions_path, {remote: true}) %> > <%= escape_javascript(link_to(@region.name, suggest_areas_path(region_id: @region.id), {remote: true, class: 'area_choice'})) %> > ")
+$('#current_condition').css({'border-bottom': 'dotted 1.5px'});
 
 <!--現在の検索条件からarea名、problem名をリセットする-->
 $('#current_area').text("")
