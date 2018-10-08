@@ -11,7 +11,8 @@ Rails.application.routes.draw do
   resources :posts
   
   get 'admin', to: 'admin#index'
-  
+
+  get 'suggest_regions', to: 'search#suggest_regions'  
   get 'suggest_areas', to: 'search#suggest_areas'
   get 'suggest_problems', to: 'search#suggest_problems'
   get '/increment_hits', to: 'posts#increment_hits'

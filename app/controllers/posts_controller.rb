@@ -26,8 +26,7 @@ class PostsController < ApplicationController
         @posts_num_by_problem = records.group_by{|record| record.problem_id}.map{|k,v| [k,v.size]}.to_h
         
         # gon.names = get_words_for_refine_search()
-        
-        @region = Region.all
+
     end
     
     #承認状況等の更新

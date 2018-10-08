@@ -1,0 +1,16 @@
+<!--現在の検索条件としてregion名を表示する-->
+$('#current_region').html("<%= escape_javascript(link_to '全国', suggest_regions_path, {remote: true}) %> > ")
+
+<!--現在の検索条件からarea名、problem名をリセットする-->
+$('#current_area').text("")
+$('#current_problem').text("")
+
+
+
+<!--areaの選択肢を生成する-->
+$('#refine_search_body')
+    .html("<%= escape_javascript(render 'region_choices') %>")
+    .show()
+
+<!--「絞り込み検索」を展開済みの表示にする-->
+$('#refine_search_title').html('<i class="fas fa-minus-square"></i> 絞りこみ検索')

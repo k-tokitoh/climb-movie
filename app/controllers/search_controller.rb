@@ -1,5 +1,8 @@
 class SearchController < ApplicationController
     
+    def suggest_regions
+    end
+    
     def suggest_areas
         @region = Region.find(params[:region_id])
         records = Area.joins(rocks:{problems: :posts}).select('areas.id as area_id, posts.approved as approved')
