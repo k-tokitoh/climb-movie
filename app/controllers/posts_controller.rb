@@ -130,14 +130,14 @@ class PostsController < ApplicationController
         db = Region.joins(areas: {rocks: {problems: :posts}}).select(selection_string).order("posts.hit DESC")
         # この時点でdbはactiverecord relation(ハッシュを要素とする配列みたいなもの)
 
+        # 承認状況で検索
+        db = db.where(posts: {approved: approval_condition})
+
         # キー：エリアのid、値：そのエリアに紐づいた動画の数　というハッシュをつくっておく 
         @posts_num_by_area = db.group_by{|record| record.area_id}.map{|k,v| [k,v.size]}.to_h
         
         # キー：課題のid、値：その課題に紐づいた動画の数　というハッシュをつくっておく 
         @posts_num_by_problem = db.group_by{|record| record.problem_id}.map{|k,v| [k,v.size]}.to_h
-        
-        # 承認状況で検索
-        db = db.where(posts: {approved: approval_condition})
         
         #フリーワード検索
         if params.has_key?(:q)
