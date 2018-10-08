@@ -635,6 +635,9 @@
     lity.current  = currentInstance;
 
     $(document).on('click.lity', '[data-lity]', lity);
-
+    
     return lity;
 }));
+
+
+// f{ 関数 }(  )

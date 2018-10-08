@@ -39,49 +39,14 @@
   
 </div>
 
-<div class='posts'>
-  <% if @posts.length == 0 %>
-    検索条件に合う動画がありません
-  <% end %>
-  <% @posts.each_with_index do |post, i| %>
-  <div class='post'>
-    <!--<div class="collapse show" id="collapse-target<%= i %>">-->
-      <div class="thumbnail">
-        <a href="https://www.youtube.com/embed/<%= post.video.html_safe %>?" data-lity="data-lity">
-          <%= image_tag("http://img.youtube.com/vi/#{post.video.html_safe}/mqdefault.jpg", { :border => '0', :alt => 'title'}) %>
-        </a>
-      </div>
-    <!--</div>-->
-    <div>
-      <!--<button class="btn btn-primary" data-toggle="collapse" data-target="#collapse-target<%= i %>" role="button" aria-expanded="false">-->
-        <b><%= post.problems.map{ |problem| 
-          "#{problem.name}#{GRADE_CORRESPONDENCE.to_h.invert[problem.grade]}"}.join %></b><br>
-        <span class='region_area'>
-          <%= "#{post.problems.first.rock.area.name},#{post.problems.first.rock.area.region.name}" %>
-        </span>
-        <% if session[:admin] == true %>
-          <br><span class="youtube_title"><%= "on youtube: #{post.title}" %></span>
-        <% end %>
+<%= "#{@posts_num}件の動画を表示" %>
 
+<%= render 'feed' %>
 
-      <!--</button>-->
-    </div>
-　　<% if session[:admin] == true %>
-　　  <div class="request_ajax_update">
-        承認状況 : <span class="upproval_state" ><%= post.approved %></span>
-        <%= form_for(post, remote: true, authenticity_token: true) do |f| %>
-          <!-- ↑ authenticity_token: true を書かないと行けない。なぜか。 !-->
-          <label class='radio_label'><%= f.radio_button :approved, 'OK' %>OK</label>
-          <label class='radio_label'><%= f.radio_button :approved, 'NG' %>NG</label>
-          <label class='radio_label'><%= f.radio_button :approved, 'suspended' %>suspended</label>
-          <%= f.submit '更新' %>
-        <% end %>
-      </div>
-    <% end %>
-  </div>
+<% if @feed_mode == '1_problem_many_movies' %>
+  <%= link_to "#{@problem.rock.area.name}の全ての課題をみる", search_path(area_id: @problem.rock.area.id) %><br>
+<% end %>
 
-  <% end %>
-</div>
 <div class="paginator">
   <%= paginate @posts %>
 </div>

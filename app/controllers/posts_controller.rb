@@ -1,18 +1,47 @@
 class PostsController < ApplicationController
     
     def index
-        if session[:admin]                                                      #管理ユーザの場合、
-            @posts = Post.where(approved: 'undecided').page(params[:page]).per(12)                       #undecidedのみをフィードして、
-        else                                                                    #一般ユーザの場合、
-            @posts = Post.where(approved: 'OK').page(params[:page]).per(12)     #公開が許可されたポストのみをフィードする
+        # いくつかテーブルをくっつけてよみこみ
+        records = Area.joins(rocks: {problems: :posts}).select('areas.id, posts.video, posts.approved,posts.id as post_id, problems.id as problem_id')
+            
+        if session[:admin] 
+            posts = Post.where(approved: 'undecided')
+            @posts = posts.page(params[:page]).per(12)                       #undecidedのみをフィードして、
+            @posts_num = posts.size
+        else
+            # 公開が許可されているポストに限定する
+            records = records.where(posts: {approved: 'OK'})
+
+            # 1つの課題につき1つの動画を抽出する
+            post_ids = records.group_by{|record|record.problem_id}.values.map{|r|r[0].post_id}
+            posts = Post.where(id: post_ids)
+            @posts = posts.page(params[:page]).per(12)
+            @posts_num = posts.size
         end
+        
+        # キー：課題のid、値：その課題に紐づいた動画の数　というハッシュをつくっておく 
+        @posts_num_by_problem = records.group_by{|record| record.problem_id}.map{|k,v| [k,v.size]}.to_h
+        
         gon.names = get_words_for_refine_search()
+        
+        @feed_mode = '1_problem_1_movie'
+        @region = Region.all
+
     end
     
-    def update                                  #承認状況等の更新
+    #承認状況等の更新
+    def update
         @post = Post.find(params[:id])
         @post.update_attributes(post_params)    #post_paramsはprivateで定義している
         render plain: @post.approved            # @postの承認状況(を表すテキスト)を送る
+    end
+
+    def increment_hits
+        byebug
+      post = Post.find(params[:post_id])
+      incremented_hit = post.hit + 1
+      post.update({hit: incremented_hit})
+      render json: hit
     end
 
     def get_youtube_videos
@@ -73,39 +102,63 @@ class PostsController < ApplicationController
         #ex. params[:approval] = {"OK"=>"true", "NG"=>"true"}
         #ex. approval_condition = ["OK", "NG"]
 
-        #検索対象となる情報をすべて含むactiverecord associationを取得する
+        #検索対象となる情報をすべて含むactiverecord relationを取得する
         selection_string =                          # joinした後のActiveRecord_Relationでselectするときは、
             'regions.name as region, '+             # カラム名(nameとか)が重複するときは、asで名付け直さないといけないらしい
+            'areas.id as area_id, ' +
             'areas.name as area, ' +                # 今回は全て名付け直しておいた。
             'rocks.name as rock, ' +
+            'problems.id as problem_id, ' +
             'problems.name as problem, ' +
             'problems.grade as grade, ' +
             'posts.id as post_id'
-        db = Region.joins(areas: {rocks: {problems: :posts}})       # 順次joinする
-                    .where(posts: {approved: approval_condition})   # approval_conditonにマッチするpostのみ取り出す
-                    .select(selection_string)                       # 検索に用いるカラムを取り出す
+            
+        db = Region.joins(areas: {rocks: {problems: :posts}}).select(selection_string)
+        # この時点でdbはactiverecord relation(ハッシュを要素とする配列みたいなもの)
 
-        if params.has_key?(:q)                              #フリーワード検索の時
+        # キー：エリアのid、値：そのエリアに紐づいた動画の数　というハッシュをつくっておく 
+        @posts_num_by_area = db.group_by{|record| record.area_id}.map{|k,v| [k,v.size]}.to_h
+        
+        # キー：課題のid、値：その課題に紐づいた動画の数　というハッシュをつくっておく 
+        @posts_num_by_problem = db.group_by{|record| record.problem_id}.map{|k,v| [k,v.size]}.to_h
+        
+        # 承認状況で検索
+        db = db.where(posts: {approved: approval_condition})
+        
+        #フリーワード検索
+        if params.has_key?(:q)
             q = params[:q].gsub(/\p{blank}/,' ').split()    #検索クエリの全角スペースを半角スペースに置換してsplit
-            #各レコードについて、複数の検索条件全てに合致するかをしらべて
-            matched_ids = db.select{ |record| freeword_search(record, q)          # qは検索クエリワードの配列
+            # 各レコードについて、複数の検索条件全てに合致するかをしらべて
+            # select文を適用することで、dbはactiverecord relationからarrayになる
+            db = db.select { |record| freeword_search(record, q) }          # qは検索クエリワードの配列
             #すべての検索条件に合致する場合のみpost_idを記録する
-            }.map{ |record| record.post_id}
-        elsif [:region, :area, :problem, :grade].all?{ |condition| params.has_key?(condition)}   # 詳細検索の時
-            db = db.select{ |record|
-                [:region, :area, :problem].all?{ |condition|
-                    params[condition] == '' || record[condition] == params[condition]    # paramsで空白の時は検査しない
-                }
-            }.select{ |record|
-                    params[:grade][:lower].to_i <= record.grade  && record.grade <= params[:grade][:upper].to_i
-            }
-            matched_ids = db.map{ |record| record.post_id}
+        end
+        
+        # 課題指定で検索
+        if params.has_key?(:problem_ids)
+            # 複数の課題が指定されている場合は、それらの課題のうちどれかに該当する動画を返すようにしたい（未実装）
+            db = db.select{ |record| params[:problem_ids].include?(record.problem_id.to_s) }
+            
+            # db = db.select{ |record| record.problem_id == params[:problem_id].to_i }
+            @feed_mode = '1_problem_many_movies'
+            @problem = Problem.find(params[:problem_ids][0])
+            @area = @problem.rock.area
+        end
+        
+        # エリア指定で検索
+        if params.has_key?(:area_id)
+            # selectで指定されたエリアの課題を抽出する
+            # group_by以下で１つの課題に対して、一番うえにある動画レコードのみを抽出する
+            db = db.select{ |record| record.area_id == params[:area_id].to_i }.group_by{|record| record.problem_id}.values.map{|records| records[0]}
+            @feed_mode = '1_problem_1_movie'
+            @area = Area.find(params[:area_id])
         end
 
-        
-
-        @posts = Post.where(id: matched_ids).page(params[:page]).per(12)    # 選択されたidのみ表示する
-        @posts_num = Post.where(approved: 'OK').length
+        matched_ids = db.map{ |record| record.post_id}
+        posts = Post.where(id: matched_ids)
+        @region = Region.all
+        @posts = posts.page(params[:page]).per(12)    # 選択されたidのみ表示する
+        @posts_num = posts.size
         gon.names = get_words_for_refine_search()
         render 'index'
     end

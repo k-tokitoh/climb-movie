@@ -1,0 +1,15 @@
+<!--現在の検索条件としてarea名を表示する-->
+$('#current_area').html("<%= escape_javascript(link_to(@area.name, suggest_problems_path(area_id: @area.id), {remote: true, class: 'area_choice'})) %> > ");
+
+<!--現在の検索条件からproblem名をリセットする-->
+$('#current_problem').text("")
+
+<!--regionの選択肢を非表示にする-->
+$('#region_choices').hide()
+
+<!--areaの選択肢を非表示にする-->
+$('#area_choices').hide()
+
+<!--areaの選択肢を生成し、表示させる-->
+$('#problem_choices').show();
+$('#problem_choices').html("<%= escape_javascript(render 'problem_choices') %>");
