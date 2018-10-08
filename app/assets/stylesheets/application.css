@@ -28,6 +28,10 @@ header img {
   margin:0 auto 0;
 }
 
+.free_word_search {
+  margin-bottom: 8px;
+}
+
 .free_word_search_form{
   -webkit-appearance: none;
   width:70%;
@@ -91,5 +95,10 @@ footer{
   
   .free_word_search_button{
     height:36px;
+  }
+  
+  #refine_search{
+    width:60%;
+    margin:0px auto 0px;
   }
 }

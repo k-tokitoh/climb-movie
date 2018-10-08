@@ -1,5 +1,6 @@
-<li><%= link_to 'このエリアの課題をすべてみる', search_path(area_id: @area.id) %></li>
-<% @area.rocks.joins(:problems).select('problems.id as id, problems.name as name, problems.grade as grade').each do |problem| %>
-    <li><%= link_to "#{problem.name} #{GRADE_CORRESPONDENCE.to_h.invert[problem.grade]} (#{@posts_num_by_problem.fetch(problem.id,0)})", search_path(problem_ids: [problem.id]) %></li>
-    
-<% end %>
+<ul id='refine_search_choices'>
+    <li><%= link_to 'このエリアの課題をすべてみる', search_path(area_id: @area.id) %></li>
+    <% @area.rocks.joins(:problems).select('problems.id as id, problems.name as name, problems.grade as grade').each do |problem| %>
+        <li><%= link_to "#{problem.name} #{GRADE_CORRESPONDENCE.to_h.invert[problem.grade]} (#{@posts_num_by_problem.fetch(problem.id,0)})", search_path(problem_ids: [problem.id]) %></li>
+    <% end %>
+</ul>

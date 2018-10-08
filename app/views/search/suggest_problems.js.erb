@@ -4,12 +4,9 @@ $('#current_area').html("<%= escape_javascript(link_to(@area.name, suggest_probl
 <!--現在の検索条件からproblem名をリセットする-->
 $('#current_problem').text("")
 
-<!--regionの選択肢を非表示にする-->
-$('#region_choices').hide()
-
-<!--areaの選択肢を非表示にする-->
-$('#area_choices').hide()
 
 <!--areaの選択肢を生成し、表示させる-->
-$('#problem_choices').show();
-$('#problem_choices').html("<%= escape_javascript(render 'problem_choices') %>");
+$('#refine_search_body')
+    .html("<%= escape_javascript(render 'problem_choices') %>")
+    .show('slow')
+$('#refine_search_title').html('<i class="fas fa-minus-square"></i> 絞りこみ検索')

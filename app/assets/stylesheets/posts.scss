@@ -8,22 +8,50 @@
     padding: 2px 20px 2px;
 }
 
-.posts {
+#refine_search_title {
+    margin-bottom: 4px;
+}
+
+#current_condition {
+    margin-bottom: 4px;
+}
+
+#refine_search_choices {
+    list-style: none;
+    padding-left: 0px;
+}
+
+
+
+.feed_description {
+    width: 94%;
+    margin: 2px auto 0;
+    padding: 0 20px 0;
+}
+
+#posts {
     width:98%;
     margin:0 auto 0;
+    padding: 0;
+    list-style: none;
 }
 
 .post {
     width: 96%;
-    margin: 10px auto 10px;
+    margin: 5px auto 15px;
     padding:0 0 0;
     border:1px;
     border-style:solid;
-    box-shadow:0px 0px 6px;
+    border-radius: 6px;
+    box-shadow:0px 0px 4px;
 }
 
 .thumbnail img{
     width:100%;
+}
+
+.caption {
+    margin:0 6px 0 4px;
 }
 
 .region_area{
@@ -32,6 +60,10 @@
 
 .youtube_title{
     color:red;
+}
+
+.hit {
+    float: right;
 }
 
 .paginator {
@@ -58,8 +90,6 @@
   .thumbnail:hover{
       opacity: 0.62;
       transition: 0.4s;
-//     transform: translateY(-5px);
-// 	transition-duration: 0.5s;
   }
 }
 

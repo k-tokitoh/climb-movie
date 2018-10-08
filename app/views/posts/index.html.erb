@@ -39,13 +39,21 @@
   
 </div>
 
-<%= "#{@posts_num}件の動画を表示" %>
+<div class='feed_description'>
+  <% if @posts_num >= 0 %>  
+    <%= "#{@posts_num}件の動画を表示" %>
+  <% else %>
+    検索条件に合う動画がありません
+  <% end %>
+</div>
 
 <%= render 'feed' %>
 
-<% if @feed_mode == '1_problem_many_movies' %>
-  <%= link_to "#{@problem.rock.area.name}の全ての課題をみる", search_path(area_id: @problem.rock.area.id) %><br>
-<% end %>
+<div class='feed_description'>
+  <% if @feed_mode == '1_problem_many_movies' %>
+    <%= link_to "#{@problem.rock.area.name}の全ての課題をみる", search_path(area_id: @problem.rock.area.id) %><br>
+  <% end %>
+</div>
 
 <div class="paginator">
   <%= paginate @posts %>
