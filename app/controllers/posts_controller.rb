@@ -6,7 +6,7 @@ class PostsController < ApplicationController
         records = Area.joins(rocks: {problems: :posts}).select('areas.id, posts.video, posts.approved,posts.id as post_id, problems.id as problem_id')
             
         if session[:admin] 
-            posts = Post.where(approved: 'undecided')
+            posts = Post.where(approved: 'undecided').order(hit: :DESC)
             @posts = posts.page(params[:page]).per(12)                       #undecidedのみをフィードして、
             @posts_num = posts.size
         else
@@ -15,6 +15,7 @@ class PostsController < ApplicationController
 
             # 1つの課題につき1つの動画を抽出する
             post_ids = records.group_by{|record|record.problem_id}.values.map{|r|r[0].post_id}
+            # idによりレコードをとってきなおすとき、id順になってしまうようなので、再びhit順にする
             posts = Post.where(id: post_ids).order(hit: :DESC)
             @posts = posts.page(params[:page]).per(12)
             @posts_num = posts.size
@@ -36,6 +37,7 @@ class PostsController < ApplicationController
         render plain: @post.approved            # @postの承認状況(を表すテキスト)を送る
     end
 
+    # 再生回数のインクリメント
     def increment_hits
         hit = Post.find(params[:post_id]).hit
         hit += 1
@@ -43,6 +45,7 @@ class PostsController < ApplicationController
         render plain: hit
     end
 
+    # youtubeからの情報取得
     def get_youtube_videos
         #以下の３行、ここに書くのでよいのかな？
         require 'google/apis/youtube_v3'
@@ -88,6 +91,7 @@ class PostsController < ApplicationController
         redirect_to '/'
     end
     
+    # 検索
     def search
        if session[:admin]
            if params.has_key?(:approval)           # 検索条件の認証状態チェックボックスに一つでもチェックがある場合
@@ -112,7 +116,7 @@ class PostsController < ApplicationController
             'problems.grade as grade, ' +
             'posts.id as post_id'
             
-        db = Region.joins(areas: {rocks: {problems: :posts}}).select(selection_string)
+        db = Region.joins(areas: {rocks: {problems: :posts}}).select(selection_string).order("posts.id DESC")
         # この時点でdbはactiverecord relation(ハッシュを要素とする配列みたいなもの)
 
         # キー：エリアのid、値：そのエリアに紐づいた動画の数　というハッシュをつくっておく 
@@ -154,7 +158,8 @@ class PostsController < ApplicationController
         end
 
         matched_ids = db.map{ |record| record.post_id}
-        posts = Post.where(id: matched_ids)
+        # idによりレコードをとってきなおすとき、id順になってしまうようなので、再びhit順にする
+        posts = Post.where(id: matched_ids).order(hit: :DESC)
         @region = Region.all
         @posts = posts.page(params[:page]).per(12)    # 選択されたidのみ表示する
         @posts_num = posts.size
