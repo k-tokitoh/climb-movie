@@ -15,8 +15,10 @@
     <p id='current_condition'>
         <span id='current_region'>
             <% if @area.present? %>
+                <%= link_to '全国', suggest_regions_path, {remote: true} %>
+                <%= ' > ' %>
                 <%= link_to @area.region.name, suggest_areas_path(region_id: @area.region.id), {remote: true} %>
-                <%= " > " %>
+                <%= ' > ' %>
             <% end %>
         </span>
         <span id='current_area'>
