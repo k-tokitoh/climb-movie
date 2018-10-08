@@ -16,6 +16,10 @@ $(document).on 'turbolinks:load', ->
       else
         $('#refine_search_title').html('<i class="fas fa-minus-square"></i> 絞りこみ検索')
 
+  # 絞り込み条件が既に存在したら、ドットの下線をつける
+  if $('#current_condition').text().trim() != ""
+    $('#current_condition').css({'border-bottom': 'dotted 1.5px'})
+
   # 
   $('#current_region').on 'click', ->
     $('#refine_search_body').show()

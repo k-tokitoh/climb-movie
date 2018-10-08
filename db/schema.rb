@@ -10,13 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180923000931) do
+ActiveRecord::Schema.define(version: 20181008075116) do
 
   create_table "areas", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string   "name"
     t.integer  "region_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+    t.string   "other_names"
     t.index ["region_id"], name: "index_areas_on_region_id", using: :btree
   end
 
@@ -40,8 +41,9 @@ ActiveRecord::Schema.define(version: 20180923000931) do
     t.string   "name"
     t.integer  "grade"
     t.integer  "rock_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+    t.string   "other_names"
     t.index ["rock_id"], name: "index_problems_on_rock_id", using: :btree
   end
 
@@ -54,8 +56,9 @@ ActiveRecord::Schema.define(version: 20180923000931) do
   create_table "rocks", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string   "name"
     t.integer  "area_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+    t.string   "other_names"
     t.index ["area_id"], name: "index_rocks_on_area_id", using: :btree
   end
 

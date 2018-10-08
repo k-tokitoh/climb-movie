@@ -52,9 +52,9 @@ class PostsController < ApplicationController
         youtube = Google::Apis::YoutubeV3::YouTubeService.new       
         youtube.key = ENV["YOUTUBE_API_KEY"]     #'.env'ファイルで定義
         
-        @problems = Problem.all
-        @problems.each do |problem|
-        
+        Problem.all.each do |problem|
+            problem_name = trim(problem.name)
+            
             results = youtube.list_searches(
                 "id, snippet",                   #取得内容
                 type: "video",          #チャンネルやプレイリストを含まず、動画のみ取得する
@@ -64,25 +64,37 @@ class PostsController < ApplicationController
             
             results.each do |result|
                 trimmed_title = trim(result.snippet.title)
+                trimmed_description = trim(result.snippet.description)
+                trimmed_snippet = trimmed_title + trimmed_description
+                
                 matched_post = Post.find_by(video: result.id.video_id)
-                #既に動画を持っている場合、video_id以外の属性を更新する
+                # 既にそのvideo_idを持っている場合、video_id以外の属性を更新する
                 if matched_post.present?
                     matched_post.update(title: trimmed_title)
+                # まだそのvideo_idを持っていない場合、新たにpostを作成する
                 else
-                    matched_post = Problem.find_by(name: problem.name).posts.create(video: result.id.video_id, title: trimmed_title, approved: 'undecided')
+                    matched_post = problem.posts.create(video: result.id.video_id, title: trimmed_title, approved: 'undecided', hit: 0)
                 end
                 
-                # youtubeでのタイトルがエリア名、課題名、グレードを全て含む場合、そのpostの公開を許可する。
-                # グレードは表記ゆれに対応し、いずれかを含めばよい。（定数はenvironment.rbで定義）
-                perfect_match = true
-                matched_post.problems.each do |problem|
-                    if [problem.rock.area.name, problem.name, ].all?{|i|trimmed_title.include?(i)} == false \
-                        || [GRADE_CORRESPONDENCE.to_h.invert[problem.grade], GRADE_QDver[problem.grade], GRADE_chara[problem.grade]].any?{|i|trimmed_title.include?(i)} == false
-                        perfect_match = false
-                    end
+                # youtubeの動画情報が、紐づけようとしているエリアの名前（又はその別名）を含むか調べる
+                if problem.rock.area.other_names.present?
+                    area_match = true if problem.rock.area.other_names.split(',').unshift(problem.rock.area.name).any?{|i|trimmed_snippet.include?(i)}
+                else
+                    area_match = true if trimmed_snippet.include?(problem.rock.area.name)
                 end
 
-                if perfect_match == true
+                # youtubeの動画情報が、紐づけようとしている課題の名前（又はその別名）を含むか調べる                
+                if problem.other_names.present?
+                    problem_name_match = true if problem.other_names.split(',').unshift(problem.name).any?{|i|trimmed_snippet.include?(i)}
+                else
+                    problem_name_match = true if trimmed_snippet.include?(problem.name)
+                end
+                
+                # youtubeの動画情報が、紐づけようとしている課題のグレードを含むか調べる（表記法はtrim()により既に統一してある）
+                problem_grade_match = true if trimmed_snippet.include?(GRADE_CORRESPONDENCE.to_h.invert[problem.grade])
+                
+                # youtubeの動画情報が、紐づけようとしているエリアの名前、課題の名前及びグレードを含む場合、その動画を直ちに公開する
+                if area_match && problem_name_match && problem_grade_match
                     matched_post.update(approved: 'OK')
                 end
             end
@@ -116,7 +128,7 @@ class PostsController < ApplicationController
             'problems.grade as grade, ' +
             'posts.id as post_id'
             
-        db = Region.joins(areas: {rocks: {problems: :posts}}).select(selection_string).order("posts.id DESC")
+        db = Region.joins(areas: {rocks: {problems: :posts}}).select(selection_string).order("posts.hit DESC")
         # この時点でdbはactiverecord relation(ハッシュを要素とする配列みたいなもの)
 
         # キー：エリアのid、値：そのエリアに紐づいた動画の数　というハッシュをつくっておく 
@@ -192,15 +204,35 @@ class PostsController < ApplicationController
         names
     end
     
-    def trim(text)      #mysqlが絵文字に対応していないため
-      return text if text.nil?
-      text.each_char do |b|
-        text.delete!(b) if b.bytesize == 4
-      end
-      # 全角数字を半角にする
-      text.tr!("０-９", "0-9")
-      # 半角及び全角のスペースを取り除く
-      text.gsub!(/(\s|　)+/, '')
-      return text
+    # youtubeの動画情報及びDB側の情報を整形し、照合可能にする
+    def trim(text)
+        return text if text.nil?
+        
+        # 絵文字などの4バイト文字を取り除く（mysqlが絵文字に対応していないため）
+        text.each_char do |b|
+            text.delete!(b) if b.bytesize == 4
+        end
+        
+        # 大文字を小文字にする
+        text.downcase!
+        
+        # 全角英数字を半角にする
+        text.tr!('０-９ａ-ｚ', '0-9a-z')
+        
+        # "・"を取り除く
+        text.tr!("・", "")
+      
+        # 半角及び全角のスペースを取り除く
+        text.gsub!(/(\s|　)+/, '')
+        
+        # グレード表記を統一する
+        [GRADE_QDver, GRADE_chara].each do |hash|
+            hash.each do |grade_int, grade_string|
+                text.gsub!(/#{grade_string}/, GRADE_CORRESPONDENCE.to_h.invert[grade_int])
+            end
+        end
+        
+        return text
+      
     end
 end
