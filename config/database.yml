@@ -49,9 +49,9 @@ test:
 #
 
 production:
-  adapter: postgresql
+  adapter: mysql2
   encoding: utf8
   pool: 5
-  database: climbmania_production
-  username: climbmania
-  password: <%= ENV[' CLIMBMANIA_DATABASE_PASSWORD'] %>
+  database: <%= ENV[' CLIMB-MOVIE_DB_NAME'] %>
+  username: <%= ENV[' CLIMB-MOVIE_DB_USERNAME'] %>
+  password: <%= ENV[' CLIMB-MOVIE_DB_PASSWORD'] %>
