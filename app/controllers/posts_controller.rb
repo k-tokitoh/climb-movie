@@ -44,57 +44,42 @@ class PostsController < ApplicationController
 		render plain: hit
 	end
 
-	# youtubeからの情報取得
 	def create
-		#以下の３行、ここに書くのでよいのかな？
-		require 'google/apis/youtube_v3'
-		youtube = Google::Apis::YoutubeV3::YouTubeService.new
-		youtube.key = ENV["YOUTUBE_API_KEY"]     #'.env'ファイルで定義
+		youtube = Youtube::Api.new
 
 		Problem.all.each do |problem|
-			problem_name = trim(problem.name)
+			videos = youtube.search(problem)
 
-			results = youtube.list_searches(
-				"id, snippet",                   #取得内容
-				type: "video",          #チャンネルやプレイリストを含まず、動画のみ取得する
-				q: problem.name,        #検索キーワードの指定（検索方法は他にも色々あり）
-				max_results: 10        #最大取得件数
-			).items                     #動画リソースのみにフィルター
-
-			results.each do |result|
-				trimmed_title = trim(result.snippet.title)
-				trimmed_description = trim(result.snippet.description)
-				trimmed_snippet = trimmed_title + trimmed_description
-
-				matched_post = Post.find_by(video: result.id.video_id)
+			videos.each do |video|
+				matched_post = Post.find_by(video: video.id)
 				# 既にそのvideo_idを持っている場合、video_id以外の属性を更新する
 				if matched_post.present?
-						matched_post.update(title: trimmed_title)
+					matched_post.update(title: video.title)
 				# まだそのvideo_idを持っていない場合、新たにpostを作成する
 				else
-						matched_post = problem.posts.create(video: result.id.video_id, title: trimmed_title, approved: 'undecided', hit: 0)
+					matched_post = problem.posts.create(video: video.id, title: video.title, approved: 'undecided', hit: 0)
 				end
 
 				# youtubeの動画情報が、紐づけようとしているエリアの名前（又はその別名）を含むか調べる
 				if problem.rock.area.other_names.present?
-						area_match = true if problem.rock.area.other_names.split(',').unshift(problem.rock.area.name).any?{|i|trimmed_snippet.include?(i)}
+					area_match = true if problem.rock.area.other_names.split(',').unshift(problem.rock.area.name).any?{|i|video.snippet.include?(i)}
 				else
-						area_match = true if trimmed_snippet.include?(problem.rock.area.name)
+					area_match = true if video.snippet.include?(problem.rock.area.name)
 				end
 
 				# youtubeの動画情報が、紐づけようとしている課題の名前（又はその別名）を含むか調べる
 				if problem.other_names.present?
-						problem_name_match = true if problem.other_names.split(',').unshift(problem.name).any?{|i|trimmed_snippet.include?(i)}
+					problem_name_match = true if problem.other_names.split(',').unshift(problem.name).any?{|i|video.snippet.include?(i)}
 				else
-						problem_name_match = true if trimmed_snippet.include?(problem.name)
+					problem_name_match = true if video.snippet.include?(problem.name)
 				end
 
 				# youtubeの動画情報が、紐づけようとしている課題のグレードを含むか調べる（表記法はtrim()により既に統一してある）
-				problem_grade_match = true if trimmed_snippet.include?(GRADE_CORRESPONDENCE.to_h.invert[problem.grade])
+				problem_grade_match = true if video.snippet.include?(GRADE_CORRESPONDENCE.to_h.invert[problem.grade])
 
 				# youtubeの動画情報が、紐づけようとしているエリアの名前、課題の名前及びグレードを含む場合、その動画を直ちに公開する
 				if area_match && problem_name_match && problem_grade_match
-						matched_post.update(approved: 'OK')
+					matched_post.update(approved: 'OK')
 				end
 			end
 		end
@@ -201,36 +186,5 @@ class PostsController < ApplicationController
 		names['area'] = Region.joins(:areas).pluck('regions.name', 'areas.name')
 		names['problem'] = Area.joins(rocks: :problems).pluck('areas.name', 'problems.name')
 		names
-	end
-
-	# youtubeの動画情報及びDB側の情報を整形し、照合可能にする
-	def trim(text)
-		return text if text.nil?
-
-		# 絵文字などの4バイト文字を取り除く（mysqlが絵文字に対応していないため）
-		text.each_char do |b|
-			text.delete!(b) if b.bytesize == 4
-		end
-
-		# 大文字を小文字にする
-		text.downcase!
-
-		# 全角英数字を半角にする
-		text.tr!('０-９ａ-ｚ', '0-9a-z')
-
-		# "・"を取り除く
-		text.tr!("・", "")
-
-		# 半角及び全角のスペースを取り除く
-		text.gsub!(/(\s|　)+/, '')
-
-		# グレード表記を統一する
-		[GRADE_QDver, GRADE_chara].each do |hash|
-			hash.each do |grade_int, grade_string|
-				text.gsub!(/#{grade_string}/, GRADE_CORRESPONDENCE.to_h.invert[grade_int])
-			end
-		end
-
-		return text
 	end
 end

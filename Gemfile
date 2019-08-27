@@ -31,7 +31,7 @@ gem 'jbuilder', '~> 2.5'
 # gem 'redis', '~> 3.0'
 # Use ActiveModel has_secure_password
 gem 'bcrypt', '~> 3.1.7'                  #パスワードの暗号化
-gem 'google-api-client', '~> 0.11'
+gem 'google-api-client', '~> 0.11', :require => 'google/apis/youtube_v3'
 gem 'kaminari'                            #ページネーション
 gem 'hirb'                                #コンソール画面でのDBレコード表示を整える
 gem 'dotenv-rails'                        #環境変数の設定
