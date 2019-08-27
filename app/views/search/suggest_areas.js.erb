@@ -10,8 +10,8 @@ $('#current_problem').text("")
 
 <!--areaの選択肢を生成する-->
 $('#refine_search_body')
-    .html("<%= escape_javascript(render 'area_choices') %>")
-    .show('slow')
+	.html("<%= escape_javascript(render 'area_choices') %>")
+	.show('slow')
 
 $('#refine_search_title').html('<i class="fas fa-minus-square"></i> 絞りこみ検索')
 

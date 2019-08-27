@@ -5,7 +5,7 @@
     <%= "管理者としてログインしています" %>
     <%= link_to 'Logout', logout_path, method: :delete %><br>
     <%= link_to 'Youtube動画を取得する', youtubeAPI_path, method: :get %>
-    
+
     <%= form_tag("/search", method: "get") do %>
       <!--paramsが承認状況の条件をもっていなければ、全ての承認状況を表示対象にする-->
       <% if params.has_key?(:approval) %>
@@ -29,9 +29,9 @@
       <%= label_tag('approval[suspended]', "suspended(#{app_num.fetch("suspended",0)})") %><br>
       <%= render 'search' %>
     <% end %>
-    
+
     <% else %>
-    <%= form_tag("/search", method: "get") do %>  
+    <%= form_tag("/search", method: "get") do %>
       <%= render 'search' %>
     <% end %>
   <% end %>
@@ -40,7 +40,7 @@
 <div class='feed_description'>
   <% if @feed_mode == '1_problem_1_movie' %>
     <%= "#{@posts_num}件の課題を表示" %>
-  <% elsif @posts_num >= 0 %>  
+  <% elsif @posts_num >= 0 %>
     <%= "#{@posts_num}件の動画を表示" %>
   <% else %>
     検索条件に合う動画がありません

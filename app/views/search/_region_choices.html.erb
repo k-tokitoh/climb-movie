@@ -1,5 +1,5 @@
 <ul id='refine_search_choices'>
-    <% Region.all.each do |region| %>
-        <li><%= link_to region.name, suggest_areas_path(region_id: region.id), {remote: true, class: 'region_choice'} %></li>
-    <% end %>
+	<% Region.all.each do |region| %>
+		<li><%= link_to region.name, suggest_areas_path(region_id: region.id), {remote: true, class: 'region_choice'} %></li>
+	<% end %>
 </ul>

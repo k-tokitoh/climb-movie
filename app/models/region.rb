@@ -1,4 +1,4 @@
 class Region < ApplicationRecord
-    has_many :areas
-    validates :name, uniqueness: true, presence:true
+	has_many :areas
+	validates :name, uniqueness: true, presence:true
 end
