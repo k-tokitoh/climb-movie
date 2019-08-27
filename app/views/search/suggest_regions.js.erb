@@ -9,8 +9,8 @@ $('#current_problem').text("")
 
 <!--areaの選択肢を生成する-->
 $('#refine_search_body')
-	.html("<%= escape_javascript(render 'region_choices') %>")
-	.show()
+  .html("<%= escape_javascript(render 'region_choices') %>")
+  .show()
 
 <!--「絞り込み検索」を展開済みの表示にする-->
 $('#refine_search_title').html('<i class="fas fa-minus-square"></i> 絞りこみ検索')

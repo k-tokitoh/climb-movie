@@ -1,8 +1,8 @@
 <ul id='refine_search_choices'>
-	<li><%= link_to "<i class='fas fa-arrow-alt-circle-right'></i> #{@area.name}の課題をすべてみる".html_safe, search_path(area_id: @area.id) %></li>
-	<% @area.rocks.joins(:problems).select('problems.id as id, problems.name as name, problems.grade as grade').each do |problem| %>
-		<% if @posts_num_by_problem.fetch(problem.id,0) > 0 %>
-			<li><%= link_to "#{problem.name} #{GRADE_CORRESPONDENCE.to_h.invert[problem.grade]} (#{@posts_num_by_problem.fetch(problem.id,0)})", search_path(problem_ids: [problem.id]) %></li>
-		<% end %>
-	<% end %>
+  <li><%= link_to "<i class='fas fa-arrow-alt-circle-right'></i> #{@area.name}の課題をすべてみる".html_safe, search_path(area_id: @area.id) %></li>
+  <% @area.rocks.joins(:problems).select('problems.id as id, problems.name as name, problems.grade as grade').each do |problem| %>
+    <% if @posts_num_by_problem.fetch(problem.id,0) > 0 %>
+      <li><%= link_to "#{problem.name} #{GRADE_CORRESPONDENCE.to_h.invert[problem.grade]} (#{@posts_num_by_problem.fetch(problem.id,0)})", search_path(problem_ids: [problem.id]) %></li>
+    <% end %>
+  <% end %>
 </ul>

@@ -3,45 +3,45 @@
 <% q = params.fetch(:q, '') %>
 <% q = ' 岩場名・課題名で検索' if q=='' %>
 <p class='free_word_search'>
-	<%= text_field_tag :q, nil, placeholder: q, class: 'free_word_search_form' %>
-	<%= button_tag sanitize('<i class="fas fa-search"></i>'), type: "submit", class: 'free_word_search_button' %>
+  <%= text_field_tag :q, nil, placeholder: q, class: 'free_word_search_form' %>
+  <%= button_tag sanitize('<i class="fas fa-search"></i>'), type: "submit", class: 'free_word_search_button' %>
 </p>
 
 
 
 <!--絞り込み検索-->
 <div id='refine_search'>
-	<p id='refine_search_title'><i class="fas fa-plus-square"></i> 絞りこみ検索</p>
-	<p id='current_condition'>
-		<span id='current_region'>
-			<% if @area.present? %>
-				<%= link_to '全国', suggest_regions_path, {remote: true} %>
-				<%= ' > ' %>
-				<%= link_to @area.region.name, suggest_areas_path(region_id: @area.region.id), {remote: true} %>
-				<%= ' > ' %>
-			<% end %>
-		</span>
-		<span id='current_area'>
-			<% if @area.present? %>
-				<%= link_to @area.name, suggest_problems_path(area_id: @area.id), {remote: true} %>
-				<%= " > " %>
-			<% end %>
-		</span>
-		<span id='current_problem'>
-			<% if @problem.present? %>
-				<%= @problem.name %>
-			<% end %>
-		</span>
-	</p>
+  <p id='refine_search_title'><i class="fas fa-plus-square"></i> 絞りこみ検索</p>
+  <p id='current_condition'>
+    <span id='current_region'>
+      <% if @area.present? %>
+        <%= link_to '全国', suggest_regions_path, {remote: true} %>
+        <%= ' > ' %>
+        <%= link_to @area.region.name, suggest_areas_path(region_id: @area.region.id), {remote: true} %>
+        <%= ' > ' %>
+      <% end %>
+    </span>
+    <span id='current_area'>
+      <% if @area.present? %>
+        <%= link_to @area.name, suggest_problems_path(area_id: @area.id), {remote: true} %>
+        <%= " > " %>
+      <% end %>
+    </span>
+    <span id='current_problem'>
+      <% if @problem.present? %>
+        <%= @problem.name %>
+      <% end %>
+    </span>
+  </p>
 
 
 
-	<div id='refine_search_body'>
+  <div id='refine_search_body'>
 
-		<% if @area.nil? %>
-			<%= render 'search/region_choices'%>
-		<% else %>
-			<%= render 'search/problem_choices'%>
-		<% end %>
-	</div>
+    <% if @area.nil? %>
+      <%= render 'search/region_choices'%>
+    <% else %>
+      <%= render 'search/problem_choices'%>
+    <% end %>
+  </div>
 </div>

@@ -1,5 +1,5 @@
 <ul id='refine_search_choices'>
-	<% @region.areas.each do |area| %>
-		<li><%= link_to("#{area.name} (#{@posts_num_by_area.fetch(area.id,0)})", suggest_problems_path(area_id: area.id), {remote: true, id: 'area_choice'}) %></li>
-	<% end %>
+  <% @region.areas.each do |area| %>
+    <li><%= link_to("#{area.name} (#{@posts_num_by_area.fetch(area.id,0)})", suggest_problems_path(area_id: area.id), {remote: true, id: 'area_choice'}) %></li>
+  <% end %>
 </ul>
