@@ -4,7 +4,7 @@
   <% if session[:admin] == true %>
     <%= "管理者としてログインしています" %>
     <%= link_to 'Logout', logout_path, method: :delete %><br>
-    <%= link_to 'Youtube動画を取得する', youtubeAPI_path, method: :get %>
+    <%= link_to 'Youtube動画を取得する', posts_path, method: :post %>
 
     <%= form_tag("/search", method: "get") do %>
       <!--paramsが承認状況の条件をもっていなければ、全ての承認状況を表示対象にする-->

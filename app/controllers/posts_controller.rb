@@ -45,7 +45,7 @@ class PostsController < ApplicationController
 	end
 
 	# youtubeからの情報取得
-	def get_youtube_videos
+	def create
 		#以下の３行、ここに書くのでよいのかな？
 		require 'google/apis/youtube_v3'
 		youtube = Google::Apis::YoutubeV3::YouTubeService.new
