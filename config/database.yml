@@ -52,7 +52,7 @@ production:
   adapter: mysql2
   encoding: utf8
   pool: 5
-  database: <%= ENV[' CLIMB-MOVIE_DB_NAME'] %>
-  username: <%= ENV[' CLIMB-MOVIE_DB_USERNAME'] %>
-  password: <%= ENV[' CLIMB-MOVIE_DB_PASSWORD'] %>
+  database: <%= ENV['CLIMB_MOVIE_DB_NAME'] %>
+  username: <%= ENV['CLIMB_MOVIE_DB_USERNAME'] %>
+  password: <%= ENV['CLIMB_MOVIE_DB_PASSWORD'] %>
   socket: /var/lib/mysql/mysql.sock
