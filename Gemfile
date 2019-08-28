@@ -30,13 +30,14 @@ gem 'jbuilder', '~> 2.5'
 # Use Redis adapter to run Action Cable in production
 # gem 'redis', '~> 3.0'
 # Use ActiveModel has_secure_password
-gem 'bcrypt', '~> 3.1.7'                  #パスワードの暗号化
+gem 'bcrypt', '~> 3.1.7'                  # パスワードの暗号化
 gem 'google-api-client', '~> 0.11', :require => 'google/apis/youtube_v3'
-gem 'kaminari'                            #ページネーション
-gem 'hirb'                                #コンソール画面でのDBレコード表示を整える
-gem 'dotenv-rails'                        #環境変数の設定
-gem 'gon'                                 #jsとの連携
-gem 'jquery-turbolinks'                   #turbolinks(ページネーション時など)の時jsを再ロード(rails5ではいらないらしいが)
+gem 'kaminari'                            # ページネーション
+gem 'hirb'                                # コンソール画面でのDBレコード表示を整える
+gem 'dotenv-rails'                        # 環境変数の設定
+gem 'gon'                                 # jsとの連携
+gem 'jquery-turbolinks'                   # turbolinks(ページネーション時など)の時jsを再ロード(rails5ではいらないらしいが)
+gem 'whenever'                            # cronをrailsから利用できる
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
