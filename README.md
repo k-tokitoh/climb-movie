@@ -1,24 +1,8 @@
-# README
-
-This README would normally document whatever steps are necessary to get the
-application up and running.
-
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+- これは何
+  - 未経験転職時のポートフォリオ用 web アプリ
+  - アウトドアボルダリング専門の動画閲覧サイト
+- 内容
+  - admin が管理画面から山域/課題名を登録
+  - コマンド実行で youtube API を叩き、登録された山域/課題名で検索して関連しそうな url を DB に格納
+  - 管理画面から youtube 埋め込みの動画を見て、想定したボルダリングの動画であることを確認して公開承認
+  - web から公開承認された youtube 埋め込みの動画を閲覧可能。山域/課題名での検索も可能。
